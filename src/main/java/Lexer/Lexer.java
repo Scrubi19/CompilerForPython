@@ -3,15 +3,27 @@ package Lexer;
 import java.io.*;
 import java.util.ArrayList;
 import  Lexer.Token.tokenType;
+import Parser.Parser;
+
 import static java.util.regex.Pattern.matches;
 
 public class Lexer {
+
+    private static int tokenCounter = 0;
+
+    public static void increaseTokenCounter() {
+        tokenCounter++;
+    }
+
+    public static int getTokenCounter() {
+        return tokenCounter;
+    }
 
     public static void readText(String path, ArrayList<Token> tokenList) {
         try {
             int counter =  0;
             String bufLine = new String("");//путь
-            File file = new File("."+ path);
+            File file = new File("./"+path);
             FileReader fr = new FileReader(file);
             BufferedReader reader = new BufferedReader(fr);
 
@@ -28,8 +40,10 @@ public class Lexer {
                 bufLine = reader.readLine();
             }
         } catch (FileNotFoundException e) {
+            System.out.println("File "+"does not exist");
             e.printStackTrace();
         } catch (IOException e) {
+            System.out.println("File does not exist");
             e.printStackTrace();
         }
     }
@@ -65,16 +79,22 @@ public class Lexer {
                     strLiteralFlag = 1;
                     for (int i = 0 ; i < bufLiteral.size(); i++) {
                         if(!bufLiteral.get(i).equals("")) {
-                            tokenList.add(new Token(counter, string.indexOf(bufLiteral.get(i)), checkToken(bufLiteral.get(i), strLiteralFlag), bufLiteral.get(i)));
+                            tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufLiteral.get(i).split(" ")[0]),
+                                          checkToken(bufLiteral.get(i), strLiteralFlag), bufLiteral.get(i)));
+                            Parser.parsingToken(tokenList.get(getTokenCounter() - 1), tokenList.get(getTokenCounter()));
+                            increaseTokenCounter();
                             bufLiteral.remove(bufLiteral.get(i));
                         }
                     }
                 } else {
                     if(bufString.equals("_")) {
-                        tokenList.add(new Token(counter, 0, checkToken(bufString, strLiteralFlag),  bufString));
+                        tokenList.add(getTokenCounter(), new Token(counter, 0, checkToken(bufString, strLiteralFlag),  bufString));
+                        increaseTokenCounter();
                     } else {
                         strLiteralFlag = 0;
-                        tokenList.add(new Token(counter, string.indexOf(bufString), checkToken(bufString, strLiteralFlag),  bufString));
+                        tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufString),
+                                      checkToken(bufString, strLiteralFlag),  bufString));
+                        increaseTokenCounter();
                     }
                 }
             }
