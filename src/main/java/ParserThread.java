@@ -1,22 +1,18 @@
-package Parser;
 
 import Lexer.Token;
-
 import java.util.ArrayList;
-
 import static Lexer.Token.tokenType.*;
 
-public class Parser {
+public class ParserThread extends Thread {
 
-    public static int parsingToken(ArrayList<Token> tokenList, int currToken, int nextToken) {
+    public void run(ArrayList<Token> tokenList, int currToken, int nextToken) {
 
         for(int i = 0; i < tokenList.size(); i++) {
             switch (tokenList.get(i).getToken()) {
                 case DEF: // <def> <id> <lParen> <rParen> <Separator>
 //                    while(tokenList.get(i).getToken() != Separator) {//описание правил
-                        if(tokenList.get(nextToken).getToken() != ID) {
-                            return 1;
-                        }
+                    if(tokenList.get(nextToken).getToken() != ID) {
+                    }
 //                    }
                     break;
 
@@ -25,7 +21,6 @@ public class Parser {
             }
 
         }
-        return 0;
     }
 
 

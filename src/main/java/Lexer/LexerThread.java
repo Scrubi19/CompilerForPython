@@ -2,23 +2,19 @@ package Lexer;
 
 import java.io.*;
 import java.util.ArrayList;
+
 import  Lexer.Token.tokenType;
-import Parser.Parser;
 
 import static java.util.regex.Pattern.matches;
 
-public class Lexer {
+public class LexerThread extends Thread {
 
-    private static ArrayList <Token> tokenList = new ArrayList<Token>();
+    private static ArrayList<Token> tokenList = new ArrayList<Token>();
 
     private static int tokenCounter = 0;
 
-    private static Token getNextToken() {
-        if (tokenCounter != tokenList.size() && tokenList.get(tokenCounter++) != null ) {
-            return tokenList.get(tokenCounter++);
-        }
-
-        return null;
+    public LexerThread(String name) {
+        super(name);
     }
 
     public static int getTokenCounter() {
@@ -34,37 +30,37 @@ public class Lexer {
     }
 
 
-    public static void readText(String path) throws IOException {
+    public void run() {
         try {
             int counter =  0;
-            boolean flagError = false;
-            String bufLine = new String("");//путь
-            File file = new File("./"+path);
+            String bufLine;
+            File file = new File("./"+getName());
             FileReader fr = new FileReader(file);
             BufferedReader reader = new BufferedReader(fr);
 
             bufLine = reader.readLine();
-            while ( bufLine != null && !flagError) {
+            while ( bufLine != null) {
                 counter++;
                 if (bufLine.contains("#")) {
                     bufLine = bufLine.split("#", 2)[0];
                 }
                 if(bufLine.trim().length() != 0) {
-                    flagError = getTokenFromString(bufLine, counter);
+                    getTokenFromString(bufLine, counter);
                 }
                 bufLine = reader.readLine();
             }
         } catch (FileNotFoundException e) {
             System.out.println("File does not exist");
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
 
-    public static boolean getTokenFromString(String string, int counter) {
-        String buf = new String("");
+    public static void getTokenFromString(String string, int counter) {
         int strLiteralFlag = 0;
-        int parsingError;
+        String buf;
         String[] bufStrings;
         ArrayList <String> bufLiteral = new ArrayList<>();
         String strToken = extraSpace(string);
@@ -88,83 +84,88 @@ public class Lexer {
         // Обработка токенов
         bufStrings = strToken.split(" ");
 
-        for (String bufString : bufStrings) {
-            if (bufString != null) {
-                if (bufString.contentEquals("\"\"") || bufString.contentEquals("''")) {
-                    strLiteralFlag = 1;
-                    for (int i = 0 ; i < bufLiteral.size(); i++) {
-                        if(!bufLiteral.get(i).equals("")) {
-                            // Добавление токена
-                            tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufLiteral.get(i).split(" ")[0]),
-                                    checkToken(bufLiteral.get(i), strLiteralFlag), bufLiteral.get(i)));
-                            if(tokenCounter != 0) {
-                                // Запуск Парсера
-                                parsingError = Parser.parsingToken(tokenList, getTokenCounter()-1, getTokenCounter());
-                                if(parsingError == 1) {
-                                    return true;
-                                }
-                            }
-                            increaseTokenCounter();
-                            bufLiteral.remove(bufLiteral.get(i));
-                        }
-                    }
-                } else {
-                    if(bufString.equals("_")) {
-                        // Добавление токена
-                        tokenList.add(getTokenCounter(), new Token(counter, 0, checkToken(bufString, strLiteralFlag),  bufString));
-                        if(tokenCounter != 0) {
-                            // Запуск Парсера
-                            parsingError = Parser.parsingToken(tokenList, getTokenCounter()-1,  getTokenCounter());
-                            if(parsingError == 1) {
-                                return true;
-                            }
-
-                        }
-                        increaseTokenCounter();
-                    } else {
-                        strLiteralFlag = 0;
-                        // Добавление токена
-                        tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufString),
-                                checkToken(bufString, strLiteralFlag),  bufString));
-                        if(tokenCounter != 0) {
-                            // Запуск Парсера
-                            parsingError = Parser.parsingToken(tokenList, getTokenCounter()-1, getTokenCounter());
-                            // Проверка
-                            if(parsingError == 1) {
-                                return true;
-                            }
-                        }
-                        increaseTokenCounter();
-                    }
-                }
-            }
+        // Передача токенов (без обработки Литералов)
+        for(String bufString : bufStrings) {
+            tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufString), checkToken(bufString, strLiteralFlag),  bufString));
+            increaseTokenCounter();
         }
-        return false;
+
+//        for (String bufString : bufStrings) {
+//            if (bufString != null) {
+//                if (bufString.contentEquals("\"\"") || bufString.contentEquals("''")) {
+//                    strLiteralFlag = 1;
+//                    for (int i = 0 ; i < bufLiteral.size(); i++) {
+//                        if(!bufLiteral.get(i).equals("")) {
+//                            // Добавление токена
+//                            System.out.println("Я тут");
+//                            tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufLiteral.get(i).split(" ")[0]),
+//                                    checkToken(bufLiteral.get(i), strLiteralFlag), bufLiteral.get(i)));
+////                            if(tokenCounter != 0) {
+////                                // Запуск Парсера
+////                                parsingError = Parser.parsingToken(tokenList, getTokenCounter()-1, getTokenCounter());
+////                                if(parsingError == 1) {
+////                                    return true;
+////                                }
+////                            }
+//                            increaseTokenCounter();
+//                            bufLiteral.remove(bufLiteral.get(i));
+//                        }
+//                    }
+//                } else {
+//                    if(bufString.equals("_")) {
+//                        // Добавление токена
+//                        tokenList.add(getTokenCounter(), new Token(counter, 0, checkToken(bufString, strLiteralFlag),  bufString));
+////                        if(tokenCounter != 0) {
+////                            // Запуск Парсера
+////                            parsingError = Parser.parsingToken(tokenList, getTokenCounter()-1,  getTokenCounter());
+////                            if(parsingError == 1) {
+////                                return true;
+////                            }
+////                        }
+//                        increaseTokenCounter();
+//                    } else {
+//                        strLiteralFlag = 0;
+//                        // Добавление токена
+//                        tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufString),
+//                                checkToken(bufString, strLiteralFlag),  bufString));
+////                        if(tokenCounter != 0) {
+////                            // Запуск Парсера
+////                            parsingError = Parser.parsingToken(tokenList, getTokenCounter()-1, getTokenCounter());
+////                            // Проверка
+////                            if(parsingError == 1) {
+////                                return true;
+////                            }
+////                        }
+//                        increaseTokenCounter();
+//                    }
+//                }
+//            }
+//        }
     }
 
     public static String extraSpace(String string) {
         String [] template = new String[] {  "  - ", "\\[", "]", ":", ",", "\\(", "\\)", "=",
-                                             "\\+", "-", "\\*","/", "%", "\\*  \\*", "/  /",
-                                             "=  =", "!  =","<  >", "<", ">", ">  =", "<  =",
-                                             "\\+  =", "-  =", "\\*  =", "/  =", "%  =",  "\\*  \\*  =",
-                                             "\\*\\*  =", "/  /  =", "//  =", "&", "\\|", "\\^",
-                                             "~", "<  <", ">  >", "! = ", " \\* \\*= ", "//   =",
-                                             "  %=  ", "  >=  ","  <=  ", "  \\+=  ", "  ==  ", "  //  ",
-                                             "  \\*\\*  ", "  !=  ","  -=  ", "  \\*=  ", "  /=  ",
-                                             "  \\*\\*=  ", "  //=  ", "  <<  ", "  >>  ", "\t"};
+                "\\+", "-", "\\*","/", "%", "\\*  \\*", "/  /",
+                "=  =", "!  =","<  >", "<", ">", ">  =", "<  =",
+                "\\+  =", "-  =", "\\*  =", "/  =", "%  =",  "\\*  \\*  =",
+                "\\*\\*  =", "/  /  =", "//  =", "&", "\\|", "\\^",
+                "~", "<  <", ">  >", "! = ", " \\* \\*= ", "//   =",
+                "  %=  ", "  >=  ","  <=  ", "  \\+=  ", "  ==  ", "  //  ",
+                "  \\*\\*  ", "  !=  ","  -=  ", "  \\*=  ", "  /=  ",
+                "  \\*\\*=  ", "  //=  ", "  <<  ", "  >>  ", "\t"};
 
         String [] pasteBuf = new String[] {  " - ", " [ ", " ] " ," : ", " , " ," ( ",
-                                             " ) ", " = ", " + ", " - ", " * ", " / ",
-                                             " % ", "**", "//", "==", " != ", " <> ",
-                                             " < ", " > ", ">=", "<=", "+=","-=", "*=",
-                                             "/=", "%=", " **= ", " **= "," //= ", " //=",
-                                             " & ", " | ", " ^ ", " ~ ", "<<",">>", " != ",
-                                             " **= ", " //= ", " %= ", " >= ", " <= ", " += ",
-                                             " == ", " // ", " ** ", " != ", " -= ", " *= ",
-                                             " /= ", " **= ", " //= ", " << ", " >> ", "_ "};
+                " ) ", " = ", " + ", " - ", " * ", " / ",
+                " % ", "**", "//", "==", " != ", " <> ",
+                " < ", " > ", ">=", "<=", "+=","-=", "*=",
+                "/=", "%=", " **= ", " **= "," //= ", " //=",
+                " & ", " | ", " ^ ", " ~ ", "<<",">>", " != ",
+                " **= ", " //= ", " %= ", " >= ", " <= ", " += ",
+                " == ", " // ", " ** ", " != ", " -= ", " *= ",
+                " /= ", " **= ", " //= ", " << ", " >> ", "_ "};
 
         for(int i = 0; i < pasteBuf.length; i++) {
-             string = string.replaceAll(template[i], pasteBuf[i]);
+            string = string.replaceAll(template[i], pasteBuf[i]);
         }
 
         return string.trim().replaceAll(" +", " ");
@@ -293,8 +294,8 @@ public class Lexer {
                 return tokenType.KeywordWhile;
             case ("break"):
                 return tokenType.KeywordBreak;
-                case ("continue"):
-            return tokenType.KeywordContinue;
+            case ("continue"):
+                return tokenType.KeywordContinue;
             case ("in"):
                 return tokenType.KeywordIn;
             case ("is"):
@@ -303,7 +304,7 @@ public class Lexer {
                 return tokenType.RETURN;
             default:
                 if (strLiteralFlag == 1) {
-                        return tokenType.StrLiteral;
+                    return tokenType.StrLiteral;
                 } else if (string.matches("[-+]?\\d+")) {
                     return tokenType.num;
                 } else if(string.matches("^[0-9]*[.][0-9]+$")) { // float
