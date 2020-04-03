@@ -139,8 +139,8 @@ class LexerTest {
         ArrayList<tokenType> expected = new ArrayList<>();
         expected.add(tokenType.lParen);
         expected.add(tokenType.rParen);
-        expected.add(tokenType.lBrace);
-        expected.add(tokenType.rBrace);
+        expected.add(tokenType.lParen);
+        expected.add(tokenType.rParen);
 
         ArrayList<tokenType> actual = new ArrayList<>();
         actual.add(Lexer.checkToken("(", 0));

@@ -3,7 +3,6 @@ package Lexer;
 import java.io.*;
 import java.util.ArrayList;
 import  Lexer.Token.tokenType;
-import Parser.Parser;
 
 import static java.util.regex.Pattern.matches;
 
@@ -11,30 +10,56 @@ public class Lexer {
 
     private static ArrayList <Token> tokenList = new ArrayList<Token>();
 
-    private static int tokenCounter = 0;
+    private static int indexCurrToken = 0;
 
-    private static Token getNextToken() {
-        if (tokenCounter != tokenList.size() && tokenList.get(tokenCounter++) != null ) {
-            return tokenList.get(tokenCounter++);
+    public static Token getNextToken() {
+        if (indexCurrToken != tokenList.size()) {
+            return tokenList.get(indexCurrToken++);
         }
-
         return null;
     }
 
-    public static int getTokenCounter() {
-        return tokenCounter;
+    public static Token getPrevToken() {
+        if (indexCurrToken != tokenList.size()) {
+            return tokenList.get(indexCurrToken--);
+        }
+        return null;
+    }
+
+    public static Token getCurrentToken()  throws NullPointerException {
+        if (indexCurrToken != tokenList.size()) {
+            return tokenList.get(indexCurrToken);
+        }
+        return null;
+    }
+
+    public static int decreaseCurrToken() {
+        return indexCurrToken--;
+    }
+
+
+    public static int getIndexCurrToken() {
+        return indexCurrToken;
+    }
+
+    public static void setIndexCurrToken(int indexCurrToken) {
+        Lexer.indexCurrToken = indexCurrToken;
     }
 
     public static ArrayList<Token> getTokenList() {
         return tokenList;
     }
 
-    public static void increaseTokenCounter() {
-        tokenCounter++;
+    public static void dumpTokens () {
+        for(int i = 0; i < getTokenList().size(); i++) {
+            System.out.println("Loc=<" +  getTokenList().get(i).getCol() + ":"
+                    +  getTokenList().get(i).getRow() + ">   "+  getTokenList().get(i).getTokenType()
+                    + " " + "\'"+ getTokenList().get(i).getString()+"\'");
+        }
     }
 
 
-    public static void readText(String path) throws IOException {
+    public void readText(String path) throws IOException {
         try {
             int counter =  0;
             boolean flagError = false;
@@ -95,46 +120,20 @@ public class Lexer {
                     for (int i = 0 ; i < bufLiteral.size(); i++) {
                         if(!bufLiteral.get(i).equals("")) {
                             // Добавление токена
-                            tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufLiteral.get(i).split(" ")[0]),
+                            tokenList.add(new Token(counter, string.indexOf(bufLiteral.get(i).split(" ")[0]),
                                     checkToken(bufLiteral.get(i), strLiteralFlag), bufLiteral.get(i)));
-                            if(tokenCounter != 0) {
-                                // Запуск Парсера
-                                parsingError = Parser.parsingToken(tokenList, getTokenCounter()-1, getTokenCounter());
-                                if(parsingError == 1) {
-                                    return true;
-                                }
-                            }
-                            increaseTokenCounter();
                             bufLiteral.remove(bufLiteral.get(i));
                         }
                     }
                 } else {
                     if(bufString.equals("_")) {
                         // Добавление токена
-                        tokenList.add(getTokenCounter(), new Token(counter, 0, checkToken(bufString, strLiteralFlag),  bufString));
-                        if(tokenCounter != 0) {
-                            // Запуск Парсера
-                            parsingError = Parser.parsingToken(tokenList, getTokenCounter()-1,  getTokenCounter());
-                            if(parsingError == 1) {
-                                return true;
-                            }
-
-                        }
-                        increaseTokenCounter();
+                        tokenList.add(new Token(counter, 0, checkToken(bufString, strLiteralFlag),  bufString));
                     } else {
                         strLiteralFlag = 0;
                         // Добавление токена
-                        tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufString),
+                        tokenList.add(new Token(counter, string.indexOf(bufString),
                                 checkToken(bufString, strLiteralFlag),  bufString));
-                        if(tokenCounter != 0) {
-                            // Запуск Парсера
-                            parsingError = Parser.parsingToken(tokenList, getTokenCounter()-1, getTokenCounter());
-                            // Проверка
-                            if(parsingError == 1) {
-                                return true;
-                            }
-                        }
-                        increaseTokenCounter();
                     }
                 }
             }
@@ -194,17 +193,14 @@ public class Lexer {
                 return tokenType.DICT;
 
             ////Скобки
-            case ("{"):
             case ("["):
-                return tokenType.lBrace;
-            case ("}"):
-            case ("]"):
-                return tokenType.rBrace;
             case ("("):
                 return tokenType.lParen;
+            case ("]"):
             case (")"):
                 return tokenType.rParen;
             case (":"):
+                return tokenType.ExpSemi;
             case (","):
             case ("."):
                 return tokenType.Semi;
@@ -299,6 +295,8 @@ public class Lexer {
                 return tokenType.KeywordIn;
             case ("is"):
                 return tokenType.KeywordIs;
+            case ("range"):
+                return tokenType.KeywordRange;
             case ("return"):
                 return tokenType.RETURN;
             default:

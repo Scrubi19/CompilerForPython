@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 def min_elt2(arr):
 	mina=arr[0]
 	for a in arr:
@@ -6,4 +7,5 @@ def min_elt2(arr):
 	return mina
 
 array = [5, 2, 3]
-print(min_elt2(array))
+
+print(min_elt2(array))	

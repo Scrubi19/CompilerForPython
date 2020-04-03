@@ -9,7 +9,7 @@ import static java.util.regex.Pattern.matches;
 
 public class LexerThread extends Thread {
 
-    private static ArrayList<Token> tokenList = new ArrayList<Token>();
+    private static ArrayList<Token> tokenList = new ArrayList<>();
 
     private static int tokenCounter = 0;
 
@@ -84,9 +84,9 @@ public class LexerThread extends Thread {
         // Обработка токенов
         bufStrings = strToken.split(" ");
 
-        // Передача токенов (без обработки Литералов)
+        // Передача токенов (без обработки Литералов для наглядности)
         for(String bufString : bufStrings) {
-            tokenList.add(getTokenCounter(), new Token(counter, string.indexOf(bufString), checkToken(bufString, strLiteralFlag),  bufString));
+            tokenList.add(getTokenCounter(),new Token(counter, string.indexOf(bufString), checkToken(bufString, strLiteralFlag),  bufString));
             increaseTokenCounter();
         }
 
@@ -195,14 +195,10 @@ public class LexerThread extends Thread {
                 return tokenType.DICT;
 
             ////Скобки
-            case ("{"):
             case ("["):
-                return tokenType.lBrace;
-            case ("}"):
-            case ("]"):
-                return tokenType.rBrace;
             case ("("):
                 return tokenType.lParen;
+            case ("]"):
             case (")"):
                 return tokenType.rParen;
             case (":"):

@@ -6,11 +6,12 @@ public class Token {
     tokenType token;
     String string;
 
+
     public enum tokenType {
         INPUT, PRINT, DEF, Separator,
         ID, num, numFLOAT, numBinary, numOctal, numHex,  StrLiteral, UNKNOWN,
         INT, FLOAT, STR, LIST, DICT,
-        lBrace, rBrace, lParen, rParen, Semi,
+        lParen, rParen, Semi, ExpSemi,
         //operation
         opAdd, opSub, opMul, opDiv, opMod, opExponentiation, opIntegerDiv,
         opMoreEq, opLessEq, opLess, opMore, opInEqual, opEqual, opAssign,
@@ -20,7 +21,7 @@ public class Token {
         opBinaryInverting, opShiftLeft, opShiftRight,
         //keywords
         KeywordIf, KeywordElse, KeywordElif, KeywordFor, KeywordWhile,
-        KeywordBreak, KeywordContinue, KeywordIn, KeywordIs, RETURN;
+        KeywordBreak, KeywordContinue, KeywordIn, KeywordIs, RETURN, KeywordRange
     }
 
 
@@ -39,8 +40,11 @@ public class Token {
         return row;
     }
 
-    public tokenType getToken() {
-        return token;
+    public tokenType getTokenType() throws NullPointerException {
+        if (token != null) {
+            return token;
+        }
+        return null;
     }
 
     public String getString() {
