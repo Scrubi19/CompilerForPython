@@ -37,7 +37,6 @@ public class Lexer {
         indexCurrToken--;
     }
 
-
     public static int getIndexCurrToken() {
         return indexCurrToken;
     }

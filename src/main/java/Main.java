@@ -1,3 +1,4 @@
+import IdentifierTable.Table;
 import Lexer.*;
 import Parser.Parser;
 import Parser.ParserExceptions;
@@ -17,6 +18,9 @@ public class Main {
                 Lexer.readText(args[1]);
                 Parser.start();
                 Parser.showTree();
+                
+                Table.tableInitilization(Parser.root);
+                System.out.println(Table.getIdentifierTable());
                 break;
 
             case (" --dump-asm"):

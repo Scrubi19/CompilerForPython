@@ -29,7 +29,7 @@ public class Parser {
     }
 
     public static int start() throws ParserExceptions {
-        root = new AstNode(AstNodeType.PROGRAM, null, 0);
+        root = new AstNode(AstNodeType.PROGRAM, new Token(), 0);
         currentToken = getNextToken();
         while(getIndexCurrToken() != getTokenList().size()) {
             assert currentToken != null;
@@ -89,7 +89,7 @@ public class Parser {
      * @return AstNode
      * @throws ParserExceptions
      */
-    private static AstNode parseDef() throws ParserExceptions {
+    public static AstNode parseDef() throws ParserExceptions {
         int startPosition = getIndexCurrToken();
         int defStart = currentToken.getCol();
         int defEnd = 0;
