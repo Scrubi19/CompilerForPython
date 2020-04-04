@@ -78,7 +78,8 @@ public class Parser {
                     root.addChild(parseReturn());
                     break;
              }
-             lookup();
+            lookup();
+//            System.out.println(currentToken.getString());
          }
         return 0;
     }
@@ -486,17 +487,20 @@ public class Parser {
 
     }
     public static void showTreeNode(AstNode node) {
-        System.out.println(""+node.getType()+" ("+node.getToken().getString()+") level = "+node.getLevel());
+        for(int i = 0; i < node.getLevel(); i++) {
+            if(i == 0) {
+                System.out.print("|");
+            }
+            System.out.print(" ");
+        }
+        if (node.getParent().getType() != AstNodeType.PROGRAM) {
+            System.out.println("⇘"+node.getType()+" ("+node.getToken().getString()+") lvl = "+node.getLevel());
+        } else {
+            System.out.println(""+node.getType()+" ("+node.getToken().getString()+") lvl = "+node.getLevel());
+        }
         if(node.getLevel() > 0) {
             if (!node.getChildren().isEmpty()) {
                 for(AstNode temp : node.getChildren()) {
-                    for(int i = 0; i < temp.getLevel(); i++) {
-                        if(i == 0) {
-                            System.out.print("|");
-                        }
-                        System.out.print(" ");
-                    }
-                    System.out.print("\\");
                     showTreeNode(temp);
                 }
             }

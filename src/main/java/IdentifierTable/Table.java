@@ -11,7 +11,7 @@ public class Table {
     private static HashMap<String, Integer> identifierTable = new HashMap<>();
 
     public static void tableInitilization(AstNode root) {
-        if(root.getToken().getTokenType() == tokenType.ID) {
+        if(root.getType() == AstNode.AstNodeType.ID) {
             identifierTable.put(root.getToken().getString(),root.getLevel());
         }
         if (!root.getChildren().isEmpty()) {

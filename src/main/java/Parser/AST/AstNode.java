@@ -17,6 +17,10 @@ public class AstNode {
         return children;
     }
 
+    public AstNode getParent() {
+        return Parent;
+    }
+
     public AstNode() {
         this.Type = AstNodeType.UNKNOWN;
         this.Token = null;

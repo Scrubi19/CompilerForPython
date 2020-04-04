@@ -18,9 +18,9 @@ public class Main {
                 Lexer.readText(args[1]);
                 Parser.start();
                 Parser.showTree();
-                
+
                 Table.tableInitilization(Parser.root);
-                System.out.println(Table.getIdentifierTable());
+                System.out.println("\nIdentifier Table\n"+Table.getIdentifierTable());
                 break;
 
             case (" --dump-asm"):
