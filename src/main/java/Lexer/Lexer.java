@@ -33,8 +33,8 @@ public class Lexer {
         return null;
     }
 
-    public static int decreaseCurrToken() {
-        return indexCurrToken--;
+    public static void decreaseCurrToken() {
+        indexCurrToken--;
     }
 
 
