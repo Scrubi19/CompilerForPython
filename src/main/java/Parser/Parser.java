@@ -1,26 +1,19 @@
 package Parser;
 
-import Lexer.Lexer;
 import Lexer.Token.*;
 import Lexer.Token;
 import Parser.AST.AstNode;
+import Parser.AST.AstNode.AstNodeType;
 import java.util.Objects;
-
 import static Lexer.Lexer.*;
 import static Lexer.Token.tokenType.*;
 
 public class Parser {
-    public static Lexer lexer;
     public static Token currentToken;
     public static AstNode root;
 
-    public Parser(Lexer lexer) {
-        this.lexer = lexer;
-        root = new AstNode(AstNode.AstNodeType.PROGRAM, null, 0);
-
-    }
     private static void lookup() {
-        currentToken = Lexer.getNextToken();
+        currentToken = getNextToken();
     }
     public static void isMatch(tokenType type) throws ParserExceptions {
         if (currentToken.getTokenType().equals(type)) {
@@ -32,48 +25,54 @@ public class Parser {
     }
 
     public static int start() throws ParserExceptions {
-         while(getIndexCurrToken() != getTokenList().size()) {
-             switch (getTokenList().get(getIndexCurrToken()).getTokenType()) {
+        root = new AstNode(AstNodeType.PROGRAM, null, 0);
+        currentToken = getNextToken();
+        while(getIndexCurrToken() != getTokenList().size()) {
+            assert currentToken != null;
+            switch (currentToken.getTokenType()) {
                  case DEF :
-                     lookup();
-                     root.AddChild(parseDef());
+                     root.addChild(parseDef());
                      break;
                  case KeywordFor :
-                     root.AddChild(parseFor());
+                     root.addChild(parseFor());
+                     decreaseCurrToken();
+                     break;
+                 case KeywordWhile :
+                     root.addChild(parseWhile());
                      break;
                  case KeywordIf :
-                     root.AddChild(parseIf());
+                     root.addChild(parseIf());
                      break;
-                 case ID :
-                    int CalculateLevel = 0;
-                    int startPosition = getIndexCurrToken();
-                    //вычисление уровня вложений
-                    while(Objects.requireNonNull(getCurrentToken()).getTokenType() == Separator) {
-                        decreaseCurrToken();
-                        CalculateLevel++;
-                    }
-                    CalculateLevel++;
-                    setIndexCurrToken(startPosition);
-                    lookup();
-                    Token idToken = currentToken;
-                    lookup();
-
-                    if(currentToken.getTokenType() == opAssign) {
-                        lookup();
-                        if(currentToken.getTokenType() == INPUT) {
-                            root.AddChild(parseInput(idToken, CalculateLevel, null));
-                        } else if(currentToken.getTokenType() == INT || currentToken.getTokenType() == FLOAT) {
-                            root.AddChild(parseInput(idToken, CalculateLevel, currentToken));
-                        }
-                    }
-                    getPrevToken();
-                    getPrevToken();
-                    break;
+//                 case ID :
+//                    int CalculateLevel = 0;
+//                    int startPosition = getIndexCurrToken();
+//                    //вычисление уровня вложений
+//                    while(Objects.requireNonNull(getCurrentToken()).getTokenType() == Separator) {
+//                        decreaseCurrToken();
+//                        CalculateLevel++;
+//                    }
+//                    CalculateLevel++;
+//                    setIndexCurrToken(startPosition);
+//                    lookup();
+//                    Token idToken = currentToken;
+//                    lookup();
+//
+//                    if(currentToken.getTokenType() == opAssign) {
+//                        lookup();
+//                        if(currentToken.getTokenType() == INPUT) {
+//                            root.AddChild(parseInput(idToken, CalculateLevel, null));
+//                        } else if(currentToken.getTokenType() == INT || currentToken.getTokenType() == FLOAT) {
+//                            root.AddChild(parseInput(idToken, CalculateLevel, currentToken));
+//                        }
+//                    }
+//                     System.out.println(currentToken.getString());
+//                    break;
                  case PRINT :
-                     lookup();
-                     root.AddChild(parsePrint());
+                     root.addChild(parsePrint());
                      break;
-
+                 case RETURN :
+                     root.addChild(parseReturn());
+                     break;
              }
              lookup();
          }
@@ -93,8 +92,8 @@ public class Parser {
         int SeparatorCounter = 0;
         int pointer = 0;
         int DefPointer = 0;
+        AstNode node = new AstNode(AstNodeType.DEF, currentToken, 1);
         lookup();
-        AstNode node = new AstNode(AstNode.AstNodeType.DEF, currentToken, 1);
 
         isMatch(ID);
         isMatch(lParen);
@@ -149,7 +148,7 @@ public class Parser {
                     currentToken.getTokenType().equals(numBinary) ||
                     currentToken.getTokenType().equals(LIST) ||
                     currentToken.getTokenType().equals(numHex)) {
-                node.AddChild(new AstNode(AstNode.AstNodeType.ARG, currentToken,node.getLevel()));
+                node.addChild(new AstNode(AstNodeType.ARG, currentToken,node.getLevel()));
                 lookup();
             } else if(currentToken.getTokenType().equals(Semi)) {
                 lookup();
@@ -163,7 +162,6 @@ public class Parser {
         }
         return node;
     }
-
     /**<loop>
      * for ID KeywordIn ID ExpSemi
      *  Separator+
@@ -174,27 +172,21 @@ public class Parser {
      * @throws ParserExceptions
      */
     public static AstNode parseFor() throws ParserExceptions {
-        AstNode node = new AstNode(AstNode.AstNodeType.FOR, getCurrentToken());
-        int CalculateLevel = 0;
-        int startPosition = getIndexCurrToken();
-        do {
-            decreaseCurrToken();
-            CalculateLevel++;
+        AstNode node = new AstNode(AstNodeType.FOR, getCurrentToken());
+        int CalculateLevel = calculateLevel();
 
-        } while(Objects.requireNonNull(getCurrentToken()).getTokenType() == Separator);
-        setIndexCurrToken(startPosition);
         node.setLevel(CalculateLevel);
-        lookup();
+
         lookup();
 
-        node.AddChild(new AstNode(AstNode.AstNodeType.ID, currentToken, CalculateLevel));
+        node.addChild(new AstNode(AstNodeType.ID, currentToken, CalculateLevel));
         isMatch(ID);
-        node.AddChild(new AstNode(AstNode.AstNodeType.IN, currentToken, CalculateLevel));
+        node.addChild(new AstNode(AstNodeType.IN, currentToken, CalculateLevel));
         isMatch(KeywordIn);
 
         while (!currentToken.getTokenType().equals(Separator)) {
             if (currentToken.getTokenType().equals(ID)) {// for ID in ID:
-                node.AddChild(new AstNode(AstNode.AstNodeType.ID, currentToken, CalculateLevel));
+                node.addChild(new AstNode(AstNodeType.ID, currentToken, CalculateLevel));
                 lookup();
                 isMatch(ExpSemi);
             } else if(currentToken.getTokenType().equals(KeywordRange)) {// for ID in KeywordRange lParen num rParen
@@ -211,39 +203,30 @@ public class Parser {
     }
 
     public static AstNode parseIf() throws ParserExceptions {
-        int CalculateLevel = 0;
-        int startPosition = getIndexCurrToken();
-        // вычисление уровня вложенности
-        do {
-            decreaseCurrToken();
-            CalculateLevel++;
+        int CalculateLevel = calculateLevel();
 
-        } while(Objects.requireNonNull(getCurrentToken()).getTokenType() == Separator);
-        setIndexCurrToken(startPosition);
-
-        AstNode node = new AstNode(AstNode.AstNodeType.IF, getCurrentToken(),CalculateLevel);
+        AstNode node = new AstNode(AstNodeType.IF, currentToken,CalculateLevel);
 
         lookup();
-        node.AddChild(parseExpression(CalculateLevel));
+        node.addChild(parseExpression(CalculateLevel));
         isMatch(ExpSemi);
-        node.AddChild(parseStatement(CalculateLevel));
+        node.addChild(parseStatement(CalculateLevel));
 
         return node;
     }
-    /**
+    /**<expression> ExpSemi
      *
      * @param level
      * @return AtsNode
      * @throws ParserExceptions
      */
     public static AstNode parseExpression(int level) throws ParserExceptions {
-        AstNode node = new AstNode(AstNode.AstNodeType.EXPRESSION, null, level);
-        lookup();
+        AstNode node = new AstNode(AstNodeType.EXPRESSION, new Token(), level);
 
         while(!currentToken.getTokenType().equals(ExpSemi)) {
             if (currentToken.getTokenType().equals(ID) ||//  if ID or if ID lParen ID rParen
                     currentToken.getTokenType().equals(num)) {
-                node.AddChild(new AstNode(AstNode.AstNodeType.EXPRESSION, currentToken, level));
+                node.addChild(new AstNode(AstNodeType.ARG, currentToken, level));
                 lookup();
                 if (currentToken.getTokenType().equals(lParen)) {
                     lookup();
@@ -263,7 +246,7 @@ public class Parser {
                         currentToken.getTokenType().equals(opMoreEq) ||
                         currentToken.getTokenType().equals(opLessEq) ||
                         currentToken.getTokenType().equals(opInEqual)) {
-                node.AddChild(new AstNode(AstNode.AstNodeType.OPERATOR, currentToken, level));
+                node.addChild(new AstNode(AstNode.AstNodeType.OPERATOR, currentToken, level));
                 lookup();
             } else {
                 throw new ParserExceptions("expecting <ID, Number" +
@@ -276,42 +259,45 @@ public class Parser {
         return node;
     }
     public static AstNode parseStatement(int level) throws ParserExceptions {
-        AstNode node = new AstNode(AstNode.AstNodeType.STATEMENT, null, level);
-        lookup();
+        AstNode node = new AstNode(AstNode.AstNodeType.STATEMENT, new Token(), level);
+        while(currentToken.getTokenType() == Separator) {
+            lookup();
+        }
 
         while(!currentToken.getTokenType().equals(Separator)) {
-            if (currentToken.getTokenType() == opAssign) {
+            if (currentToken.getTokenType() == ID) {
+                node.addChild(new AstNode(AstNodeType.ID, currentToken, level));
                 lookup();
-                if (currentToken.getTokenType() != ID && currentToken.getTokenType() != num) {
-                    throw new ParserExceptions("expecting <ID, Number" +
-                            ", operator or ExpSemi (:) >, but found is <"
-                            + currentToken.getTokenType()
-                            + ":" + currentToken.getString()
-                            + "> in (x" + currentToken.getCol() + "," + currentToken.getRow() + ")");
-                }
+            } else if(currentToken.getTokenType() == opAssign ||
+                        currentToken.getTokenType() == opIncrement ||
+                        currentToken.getTokenType() == opDecrement ||
+                        currentToken.getTokenType() == opIncrementMul ||
+                        currentToken.getTokenType() == opDecrementDiv ||
+                        currentToken.getTokenType() == opDecrementMod ||
+                        currentToken.getTokenType() == opIncrementExponentiation ||
+                        currentToken.getTokenType() == opIntegerDiv) {
+                node.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, level));
+                lookup();
+            } else {
+                throw new ParserExceptions("\nexpecting <ID, Number" +
+                        ", operator or ExpSemi (:) >\nbut found is <"
+                        + currentToken.getTokenType()
+                        + " : " + currentToken.getString()
+                        + "> in (" + currentToken.getCol() + "," + currentToken.getRow() + ")");
             }
-            lookup();
         }
         return node;
     }
 
     public static AstNode parsePrint() throws ParserExceptions {
-        int CalculateLevel = 0;
-        int startPosition = getIndexCurrToken();
-        //вычисление уровня вложений
-        while(Objects.requireNonNull(getCurrentToken()).getTokenType() == Separator) {
-            decreaseCurrToken();
-            CalculateLevel++;
-        }
-        CalculateLevel++;
-        setIndexCurrToken(startPosition);
+        int CalculateLevel = calculateLevel();
 
-        AstNode node = new AstNode(AstNode.AstNodeType.PRINT, currentToken, CalculateLevel);
+        AstNode node = new AstNode(AstNodeType.PRINT, currentToken, CalculateLevel);
         isMatch(PRINT);
         isMatch(lParen);
         while (currentToken.getTokenType() != rParen || currentToken.getTokenType() != Separator) {
             if(currentToken.getTokenType() == ID || currentToken.getTokenType() == StrLiteral) {
-                node.AddChild(new AstNode(AstNode.AstNodeType.ARG, currentToken, CalculateLevel));
+                node.addChild(new AstNode(AstNodeType.ARG, currentToken, CalculateLevel));
                 lookup();
             } else if (currentToken.getTokenType() == Semi) {
                 lookup();
@@ -333,7 +319,7 @@ public class Parser {
     }
 
     public static AstNode parseInput(Token ID, int level, Token type) throws ParserExceptions {
-        AstNode node = new AstNode(AstNode.AstNodeType.INPUT, null, level);
+        AstNode node = new AstNode(AstNodeType.INPUT, null, level);
         if(type != null) {
             lookup();
             isMatch(lParen);
@@ -342,12 +328,78 @@ public class Parser {
             isMatch(rParen);
             isMatch(rParen);
             node.setToken(type);
+            getPrevToken();
+            getPrevToken();
         } else {
             lookup();
             isMatch(lParen);
             isMatch(rParen);
         }
-        node.AddChild(new AstNode(AstNode.AstNodeType.ID, ID, level));
+        node.addChild(new AstNode(AstNodeType.ID, ID, level));
+        return node;
+    }
+    /**
+     * WHILE <condition> ExpSemi
+     *  Separator+
+     * @return AstNode
+     * @throws ParserExceptions
+     */
+    public static AstNode parseWhile() throws ParserExceptions {
+        int CalculateLevel = calculateLevel();
+
+        AstNode node = new AstNode(AstNodeType.WHILE, currentToken, CalculateLevel);
+        lookup();
+
+        while(!currentToken.getTokenType().equals(ExpSemi)) {
+            if (currentToken.getTokenType().equals(ID) ||
+                    currentToken.getTokenType().equals(num)) {
+                node.addChild(new AstNode(AstNodeType.ARG, currentToken,node.getLevel()));
+                lookup();
+            } else if(currentToken.getTokenType().equals(opMore) || // operator
+                    currentToken.getTokenType().equals(opLess) ||
+                    currentToken.getTokenType().equals(opMoreEq) ||
+                    currentToken.getTokenType().equals(opLessEq) ||
+                    currentToken.getTokenType().equals(opInEqual)) {
+                node.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, node.getLevel()));
+                lookup();
+            }  else if(currentToken.getTokenType().equals(opAND) || // operator
+                    currentToken.getTokenType().equals(opOR) ||
+                    currentToken.getTokenType().equals(opNOT)) {
+                node.addChild(new AstNode(AstNodeType.LOGIC, currentToken, node.getLevel()));
+                lookup();
+            } else {
+                throw new ParserExceptions("\nexpecting in condition (while) <ID, number" +
+                        ", Operator or LogicOperator>\nbut found is <"
+                        + currentToken.getTokenType()
+                        + ":" + currentToken.getString()
+                        + "> in (" + currentToken.getCol()+","+currentToken.getRow()+")");
+            }
+        }
+        isMatch(ExpSemi);
+        isMatch(Separator);
+        decreaseCurrToken();
+
+        return node;
+    }
+
+    public static AstNode parseReturn() throws ParserExceptions {
+        int CalculateLevel = calculateLevel();
+
+        AstNode node = new AstNode(AstNodeType.RETURN, currentToken, CalculateLevel);
+
+        lookup();
+
+        node.addChild(new AstNode(AstNodeType.ID, currentToken, CalculateLevel));
+        isMatch(ID);
+
+        if(currentToken.getTokenType() == lParen) {
+            while(currentToken.getTokenType() != rParen) {
+                if(currentToken.getTokenType() == ID) {
+                    node.addChild(new AstNode(AstNodeType.ID, currentToken, CalculateLevel));
+                }
+                lookup();
+            }
+        }
         return node;
     }
 
@@ -374,8 +426,20 @@ public class Parser {
                 }
             }
         }
+    }
+    //вычисление уровня вложений
+    public static int calculateLevel() {
+        int CalculateLevel = 0;
+        int startPosition = getIndexCurrToken();
+        decreaseCurrToken();
+        decreaseCurrToken();
+        while(Objects.requireNonNull(getCurrentToken()).getTokenType() == Separator) {
+            decreaseCurrToken();
+            CalculateLevel++;
+        }
+        CalculateLevel++;
+        setIndexCurrToken(startPosition);
 
-
-
+        return CalculateLevel;
     }
 }

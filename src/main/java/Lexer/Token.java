@@ -1,11 +1,11 @@
 package Lexer;
 
+
 public class Token {
     int col;
     int row;
     tokenType token;
     String string;
-
 
     public enum tokenType {
         INPUT, PRINT, DEF, Separator,
@@ -24,6 +24,13 @@ public class Token {
         KeywordBreak, KeywordContinue, KeywordIn, KeywordIs, RETURN, KeywordRange
     }
 
+
+    public Token() {
+        this.col = 0;
+        this.row = 0;
+        token = tokenType.UNKNOWN;
+        string = "null";
+    }
 
     public Token(int col, int row, tokenType newToken, String lexeme) {
         this.col = col;

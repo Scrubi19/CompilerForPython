@@ -1,10 +1,7 @@
 import Lexer.*;
 import Parser.Parser;
-import Parser.Parser.*;
 import Parser.ParserExceptions;
-
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Main {
 
@@ -12,16 +9,12 @@ public class Main {
         switch (args[0]){
             case ("--dump-tokens"):
 //                new LexerThread(args[1]).start();
-
-                Lexer lexer = new Lexer();
-                lexer.readText(args[1]);
+                Lexer.readText(args[1]);
                 Lexer.dumpTokens();
 
             break;
             case ("--dump-ast"):
-                Lexer Lexer = new Lexer();
                 Lexer.readText(args[1]);
-                Parser parser = new Parser(Lexer);
                 Parser.start();
                 Parser.showTree();
                 break;

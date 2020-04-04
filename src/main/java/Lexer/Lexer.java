@@ -59,7 +59,7 @@ public class Lexer {
     }
 
 
-    public void readText(String path) throws IOException {
+    public static void readText(String path) throws IOException {
         try {
             int counter =  0;
             boolean flagError = false;

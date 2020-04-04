@@ -1,8 +1,6 @@
 package Parser.AST;
 
 import Lexer.*;
-import Lexer.Token.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +60,7 @@ public class AstNode {
         return Type;
     }
 
-    public void AddChild(AstNode child) {
+    public void addChild(AstNode child) {
         if (child.Parent != null) {
             child.Parent.children.remove(child);
         }
@@ -85,6 +83,6 @@ public class AstNode {
         PROGRAM, NUMBER, ID, ADD, SUB, MUL, DIV, ASSIGN,
         IF, ELSE, ELIF, FOR, WHILE, INPUT, DEF,
         STRLITERAL, UNKNOWN, EXPRESSION, OPERATOR, STATEMENT,
-        PRINT, ARG, IN, TYPE
+        PRINT, ARG, IN, TYPE, RETURN, NULL, LOGIC
     }
 }
