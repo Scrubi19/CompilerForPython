@@ -9,9 +9,10 @@ public class Main {
     public static void main(String[] args) throws IOException, ParserExceptions {
         switch (args[0]){
             case ("--dump-tokens"):
-//                new LexerThread(args[1]).start();
-                Lexer.readText(args[1]);
-                Lexer.dumpTokens();
+                new LexerThread(args[1]).start();
+                LexerThread.dumpTokens();
+//                Lexer.readText(args[1]);
+//                Lexer.dumpTokens();
 
             break;
             case ("--dump-ast"):

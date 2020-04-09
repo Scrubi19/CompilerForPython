@@ -29,6 +29,14 @@ public class LexerThread extends Thread {
         tokenCounter++;
     }
 
+    public static void dumpTokens () {
+        for(int i = 0; i < getTokenList().size(); i++) {
+            System.out.println("Loc=<" +  getTokenList().get(i).getCol() + ":"
+                    +  getTokenList().get(i).getRow() + ">   "+  getTokenList().get(i).getTokenType()
+                    + " " + "\'"+ getTokenList().get(i).getString()+"\'");
+        }
+    }
+
 
     public void run() {
         try {
