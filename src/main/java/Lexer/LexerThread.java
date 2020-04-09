@@ -2,7 +2,6 @@ package Lexer;
 
 import java.io.*;
 import java.util.ArrayList;
-
 import  Lexer.Token.tokenType;
 
 import static java.util.regex.Pattern.matches;
@@ -37,7 +36,6 @@ public class LexerThread extends Thread {
         }
     }
 
-
     public void run() {
         try {
             int counter =  0;
@@ -64,7 +62,6 @@ public class LexerThread extends Thread {
             e.printStackTrace();
         }
     }
-
 
     public static void getTokenFromString(String string, int counter) {
         int strLiteralFlag = 0;
