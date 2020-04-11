@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class Table {
 
-    private static HashMap<String, Integer> identifierTable = new HashMap<>();
+    private static IdentityHashMap<String, Integer> identifierTable = new IdentityHashMap<>();
 
     public static void tableInitilization(AstNode root) {
         if(root.getType() == AstNode.AstNodeType.ID) {
@@ -22,7 +22,7 @@ public class Table {
 
     }
 
-    public static HashMap<String, Integer> getIdentifierTable() {
+    public static IdentityHashMap<String, Integer> getIdentifierTable() {
         return identifierTable;
     }
 }
