@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import  Lexer.Token.tokenType;
 
+import static Lexer.Token.tokenType.EOF;
 import static java.util.regex.Pattern.matches;
 
 public class Lexer {
@@ -78,6 +79,8 @@ public class Lexer {
                 }
                 bufLine = reader.readLine();
             }
+            tokenList.add(new Token(counter, 0, EOF,  ""));
+
         } catch (FileNotFoundException e) {
             System.out.println("File does not exist");
             e.printStackTrace();

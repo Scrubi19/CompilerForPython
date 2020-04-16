@@ -8,4 +8,4 @@ def min_elt2(arr):
 	return mina
 array = [5, 2, 3]
 
-print(min_elt2(array))	
+print(min_elt2(array))

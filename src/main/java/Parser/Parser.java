@@ -91,8 +91,8 @@ public class Parser {
                             parseAssign(expression, CalculateLevel);
                             root.addChild(expression);
 
-                        } else if(currentToken.getTokenType() == lParen) {
-//                            parseArray(currentToken);
+                        } else if(currentToken.getTokenType() == lBrace) {
+                            root.addChild(parseArray(idToken, CalculateLevel));
 
                         }
                         else if(currentToken.getTokenType() == INPUT) {
@@ -136,8 +136,33 @@ public class Parser {
         return expression;
     }
 
-    public static AstNode parseArray(AstNode array, int level) throws ParserExceptions {
-        return array;
+    public static AstNode parseArray(Token array, int level) throws ParserExceptions {
+        AstNode node = new AstNode(AstNodeType.ARRAY, array, level);
+
+        isMatch(lBrace);
+
+        while (currentToken.getTokenType() != Separator || currentToken.getTokenType() != EOF) {
+            if(currentToken.getTokenType() == searchNumbers()) {
+                node.addChild(new AstNode(AstNodeType.NUMBER, currentToken, level));
+                lookup();
+                if(currentToken.getTokenType() == rBrace) {
+                    isMatch(rBrace);
+                    return node;
+                } else if (currentToken.getTokenType() == Semi) {
+                    isMatch(Semi);
+                    decreaseCurrToken();
+                } else {
+                    throw new ParserExceptions("expecting < number" +
+                            ", Strliteral, \",\" or \"]\" >, but found is <"
+                            + currentToken.getTokenType()
+                            + ":" + currentToken.getString()
+                            + "> in (" + currentToken.getCol()+","+currentToken.getRow()+")");
+                }
+            }
+            lookup();
+        }
+
+        return node;
     }
 
         /**

@@ -8,7 +8,7 @@ public class Token {
     String string;
 
     public enum tokenType {
-        INPUT, PRINT, DEF, Separator,
+        INPUT, PRINT, DEF, Separator, EOF,
         ID, num, numFLOAT, numBinary, numOctal, numHex,  StrLiteral, UNKNOWN,
         INT, FLOAT, STR, LIST, DICT,
         lParen, rParen, Semi, ExpSemi, lBrace, rBrace,
