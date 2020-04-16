@@ -193,9 +193,11 @@ public class Lexer {
 
             ////Скобки
             case ("["):
+                return tokenType.lBrace;
             case ("("):
                 return tokenType.lParen;
             case ("]"):
+                return tokenType.rBrace;
             case (")"):
                 return tokenType.rParen;
             case (":"):

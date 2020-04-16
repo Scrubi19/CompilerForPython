@@ -11,7 +11,7 @@ public class Token {
         INPUT, PRINT, DEF, Separator,
         ID, num, numFLOAT, numBinary, numOctal, numHex,  StrLiteral, UNKNOWN,
         INT, FLOAT, STR, LIST, DICT,
-        lParen, rParen, Semi, ExpSemi,
+        lParen, rParen, Semi, ExpSemi, lBrace, rBrace,
         //operation
         opAdd, opSub, opMul, opDiv, opMod, opExponentiation, opIntegerDiv,
         opMoreEq, opLessEq, opLess, opMore, opInEqual, opEqual, opAssign,

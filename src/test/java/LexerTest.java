@@ -58,7 +58,7 @@ class LexerTest {
         ArrayList<tokenType> expected = new ArrayList<>();
         expected.add(tokenType.numHex);
         expected.add(tokenType.numHex);
-        expected.add(tokenType.UNKNOWN);
+        expected.add(tokenType.numHex);
 
         ArrayList<tokenType> actual = new ArrayList<>();
         actual.add(Lexer.checkToken("0fFFF", 0));
@@ -139,8 +139,8 @@ class LexerTest {
         ArrayList<tokenType> expected = new ArrayList<>();
         expected.add(tokenType.lParen);
         expected.add(tokenType.rParen);
-        expected.add(tokenType.lParen);
-        expected.add(tokenType.rParen);
+        expected.add(tokenType.lBrace);
+        expected.add(tokenType.rBrace);
 
         ArrayList<tokenType> actual = new ArrayList<>();
         actual.add(Lexer.checkToken("(", 0));
