@@ -54,8 +54,8 @@ public class Parser {
     public static int start() throws ParserExceptions {
         root = new AstNode(AstNodeType.PROGRAM, new Token(), 0);
         currentToken = getNextToken();
-        while(getIndexCurrToken() != getTokenList().size()) {
-            assert currentToken != null;
+        assert currentToken != null;
+        while(getIndexCurrToken() != getTokenList().size() || currentToken.getTokenType() != EOF) {
             switch (currentToken.getTokenType()) {
                  case DEF :
                      root.addChild(parseDef());
@@ -88,7 +88,8 @@ public class Parser {
                         if(currentToken.getTokenType() == ID) {
                             AstNode expression = new AstNode(AstNodeType.ASSIGN, new Token(), CalculateLevel);
                             expression.addChild(new AstNode(AstNodeType.ID, idToken, CalculateLevel));
-                            parseAssign(expression, CalculateLevel);
+                            parseAssign(expression, CalculateLevel, expression.getToken().getCol());
+                            System.out.println("after");
                             root.addChild(expression);
 
                         } else if(currentToken.getTokenType() == lBrace) {
@@ -113,22 +114,19 @@ public class Parser {
                     break;
              }
             lookup();
-//            System.out.println(currentToken.getString());
          }
         return 0;
     }
-    public static AstNode parseAssign(AstNode expression, int level) throws ParserExceptions {
-        while(currentToken.getTokenType() != Separator && getIndexCurrToken() != getTokenList().size()) {
+    public static AstNode parseAssign(AstNode expression, int level, int procStr) throws ParserExceptions {
+        while(currentToken.getTokenType() != Separator && getIndexCurrToken() != getTokenList().size()
+              || currentToken.getCol() == procStr) {
             if(currentToken.getTokenType() == ID) {
                 expression.addChild(new AstNode(AstNodeType.ID, currentToken, level));
-            }
-            if(currentToken.getTokenType() == StrLiteral) {
+            } else if(currentToken.getTokenType() == StrLiteral || currentToken.getTokenType() == STR) {
                 expression.addChild(new AstNode(AstNodeType.STRLITERAL, currentToken, level));
-            }
-            if(searchNumbers() != null) {
+            } else if(searchNumbers() != null) {
                 expression.addChild(new AstNode(AstNodeType.NUMBER, currentToken, level));
-            }
-            if(searchOperators() != null) {
+            } else if(searchOperators() != null) {
                 expression.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, level));
             }
             lookup();
@@ -164,14 +162,13 @@ public class Parser {
 
         return node;
     }
-
-        /**
-         * <def>:
-         * 	"DEF" "ID" (<argumentList>) "ExpSemi"
-         * 	    "Separator+"
-         * @return AstNode
-         * @throws ParserExceptions
-         */
+    /**
+     * <def>:
+     * 	"DEF" "ID" (<argumentList>) "ExpSemi"
+     * 	    "Separator+"
+     * @return AstNode
+     * @throws ParserExceptions
+     */
     public static AstNode parseDef() throws ParserExceptions {
         int startPosition = getIndexCurrToken();
         int defStart = currentToken.getCol();
@@ -225,7 +222,6 @@ public class Parser {
         if(currentToken.getTokenType() == lParen) {
             lookup();
         }
-
         while(!currentToken.getTokenType().equals(rParen)) {
             if (currentToken.getTokenType().equals(ID) ||
                     currentToken.getTokenType().equals(num) ||
@@ -339,7 +335,6 @@ public class Parser {
         return node;
     }
     /**<expression> ExpSemi
-     *
      * @param level
      * @return AtsNode
      * @throws ParserExceptions
@@ -348,7 +343,7 @@ public class Parser {
         AstNode node = new AstNode(AstNodeType.EXPRESSION, new Token(), level);
 
         while(!currentToken.getTokenType().equals(ExpSemi)) {
-            if (currentToken.getTokenType().equals(ID) ||//  if ID or if ID lParen ID rParen
+            if (currentToken.getTokenType().equals(ID) ||// if ID or if ID lParen ID rParen
                     currentToken.getTokenType().equals(num)) {
                 node.addChild(new AstNode(AstNodeType.ARG, currentToken, level));
                 lookup();
@@ -405,12 +400,10 @@ public class Parser {
                     currentToken.getTokenType() == opIncrementExponentiation ||
                     currentToken.getTokenType() == opIntegerDiv) {
                 node.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, level));
-//                System.out.println("iter");
                 lookup();
                 if(currentToken.getTokenType() == ID
                     || currentToken.getTokenType() == num) {
                     node.addChild(new AstNode(AstNodeType.ID, currentToken, level));
-
                 }
                 lookup();
             } else {
@@ -421,7 +414,6 @@ public class Parser {
                         + "> in (" + currentToken.getCol() + "," + currentToken.getRow() + ")");
             }
         } while(calc >= level);
-
         return node;
     }
 
@@ -577,7 +569,6 @@ public class Parser {
             decreaseCurrToken();
             CalculateLevel++;
         }
-//        CalculateLevel++;
         setIndexCurrToken(startPosition);
 
         return CalculateLevel;

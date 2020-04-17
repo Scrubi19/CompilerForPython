@@ -21,6 +21,10 @@ public class AstNode {
         return Parent;
     }
 
+    public int lookupChildren(AstNode node) {
+        return getChildren().indexOf(node);
+    }
+
     public AstNode() {
         this.Type = AstNodeType.UNKNOWN;
         this.Token = null;

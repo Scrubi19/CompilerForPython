@@ -79,7 +79,7 @@ public class Lexer {
                 }
                 bufLine = reader.readLine();
             }
-            tokenList.add(new Token(counter, 0, EOF,  ""));
+            tokenList.add(new Token(counter+1, 0, EOF,  ""));
 
         } catch (FileNotFoundException e) {
             System.out.println("File does not exist");

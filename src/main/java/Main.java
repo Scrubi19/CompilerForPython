@@ -25,18 +25,18 @@ public class Main {
                 Table.tableInitialization(Parser.root);
                 System.out.println("\nIdentifier Table\n"+Table.getIdentifierTable());
                 break;
-
             case (" --dump-asm"):
                 System.out.println("ASM in Developing");
                 break;
             default:
                 Lexer.readText(args[0]);
-
                 Parser.start();
                 Parser.showTree();
-//                Table.tableInitialization(Parser.root);
+                Table.tableInitialization(Parser.root);
+                SemanticAnalysis Semantic = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
+                Semantic.start();
+
 //                System.out.println("\nIdentifier Table\n"+Table.getIdentifierTable());
-                SemanticAnalysis.start();
 
                 break;
         }

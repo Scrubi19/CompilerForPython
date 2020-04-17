@@ -8,7 +8,7 @@ public class Table {
     private static HashMap<String, Integer> identifierTable = new HashMap<>();
 
     public static void tableInitialization(AstNode root) {
-        if(root.getType() == AstNode.AstNodeType.ID) {
+        if(root.getType() == AstNode.AstNodeType.ID || root.getType() == AstNode.AstNodeType.ARRAY) {
             identifierTable.put(root.getToken().getString(),root.getLevel());
         }
         if (!root.getChildren().isEmpty()) {
@@ -16,7 +16,6 @@ public class Table {
                 tableInitialization(temp);
             }
         }
-
     }
 
     public static HashMap<String, Integer> getIdentifierTable() {
