@@ -88,10 +88,10 @@ public class AstNode {
     }
 
     public enum AstNodeType {
-        PROGRAM, NUMBER, ID, ASSIGN, IF, ELSE,
+        PROGRAM, NUMBER, FLOAT, ID, ASSIGN, IF, ELSE,
         ELIF, FOR, WHILE, INPUT, DEF, STRLITERAL,
         UNKNOWN, EXPRESSION, OPERATOR, STATEMENT,
         PRINT, ARG, IN, TYPE, RETURN, NULL, LOGIC,
-        ARRAY
+        ARRAY, INTtoFLOAT
     }
 }

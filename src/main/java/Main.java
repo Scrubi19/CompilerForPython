@@ -31,10 +31,13 @@ public class Main {
             default:
                 Lexer.readText(args[0]);
                 Parser.start();
-                Parser.showTree();
+//                Parser.showTree();
                 Table.tableInitialization(Parser.root);
+
                 SemanticAnalysis Semantic = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
                 Semantic.start();
+                System.out.println("ASTtree after SemanticAnalysis ");
+                Parser.showTree();
 
 //                System.out.println("\nIdentifier Table\n"+Table.getIdentifierTable());
 

@@ -85,20 +85,19 @@ public class Parser {
                     isMatch(ID);
                     if(currentToken.getTokenType() == opAssign ) {
                         lookup();
-                        if(currentToken.getTokenType() == ID) {
+                        if(currentToken.getTokenType() == ID || currentToken.getTokenType() == num ||
+                                currentToken.getTokenType() == numFLOAT || currentToken.getTokenType() == STR
+                                    || currentToken.getTokenType() == StrLiteral) {
                             AstNode expression = new AstNode(AstNodeType.ASSIGN, new Token(), CalculateLevel);
                             expression.addChild(new AstNode(AstNodeType.ID, idToken, CalculateLevel));
                             parseAssign(expression, CalculateLevel, expression.getToken().getCol());
-                            System.out.println("after");
                             root.addChild(expression);
 
-                        } else if(currentToken.getTokenType() == lBrace) {
+                        } else if (currentToken.getTokenType() == lBrace) {
                             root.addChild(parseArray(idToken, CalculateLevel));
-
-                        }
-                        else if(currentToken.getTokenType() == INPUT) {
+                        } else if (currentToken.getTokenType() == INPUT) {
                             root.addChild(parseInput(idToken, CalculateLevel, null));
-                        } else if(currentToken.getTokenType() == INT || currentToken.getTokenType() == FLOAT) {
+                        } else if (currentToken.getTokenType() == INT || currentToken.getTokenType() == FLOAT) {
                             root.addChild(parseInput(idToken, CalculateLevel, currentToken));
                         }
                     }
@@ -124,9 +123,12 @@ public class Parser {
                 expression.addChild(new AstNode(AstNodeType.ID, currentToken, level));
             } else if(currentToken.getTokenType() == StrLiteral || currentToken.getTokenType() == STR) {
                 expression.addChild(new AstNode(AstNodeType.STRLITERAL, currentToken, level));
-            } else if(searchNumbers() != null) {
+            } else if(currentToken.getTokenType() == num) {
                 expression.addChild(new AstNode(AstNodeType.NUMBER, currentToken, level));
-            } else if(searchOperators() != null) {
+            } else if(currentToken.getTokenType() == numFLOAT) {
+                expression.addChild(new AstNode(AstNodeType.FLOAT, currentToken, level));
+            }
+            else if(searchOperators() != null) {
                 expression.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, level));
             }
             lookup();

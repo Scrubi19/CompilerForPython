@@ -6,6 +6,7 @@ def min_elt2(arr):
 		if a < mina : 
 			mina=a
 	return mina
+	
 array = [5, 2, 3]
 
 print(min_elt2(array))
