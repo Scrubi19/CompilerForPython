@@ -132,7 +132,10 @@ public class Parser {
                 expression.lookupChildrenfromTokenString(getTokenList().get(index).getString()).setType(AstNodeType.NUMBER);
 
             } else if(currentToken.getTokenType() == numFLOAT) {
+                int index = getIndexCurrToken()-3;
                 expression.addChild(new AstNode(AstNodeType.FLOAT, currentToken, level));
+                expression.lookupChildrenfromTokenString(getTokenList().get(index).getString()).setType(AstNodeType.FLOAT);
+
             }
             else if(searchOperators() != null) {
                 expression.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, level));

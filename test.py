@@ -16,7 +16,7 @@ var = "example"
 
 variable = 5
 
-result = "example" + variable
+result = var + variable
 
 # var1 = 5.5 +"str"
 

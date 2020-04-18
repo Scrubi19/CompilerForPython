@@ -3,12 +3,13 @@ import Lexer.*;
 import Parser.Parser;
 import Parser.ParserExceptions;
 import Semantics.SemanticAnalysis;
+import Semantics.SemanticsExceptions;
 
 import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, ParserExceptions {
+    public static void main(String[] args) throws IOException, ParserExceptions, SemanticsExceptions {
         switch (args[0]){
             case ("--dump-tokens"):
 //                new LexerThread(args[1]).start();
