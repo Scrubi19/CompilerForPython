@@ -39,8 +39,6 @@ public class Main {
                 System.out.println("ASTtree after SemanticAnalysis ");
                 Parser.showTree();
 
-//                System.out.println("\nIdentifier Table\n"+Table.getIdentifierTable());
-
                 break;
         }
     }

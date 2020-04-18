@@ -8,13 +8,13 @@ while a!=0 and b!=0:
 	else:
 		b%=a
 
-gcd= a + b
+# gcd= a + b
 
 # Variable for test SemanticAnalysis
 
 # var1 = 5.5 +"str"
 
-# var2 = 5 + 2.3
+var2 = 5 + 2.3
 
 # var3 = 155.2 + 10
 
