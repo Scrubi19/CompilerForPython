@@ -21,8 +21,50 @@ public class AstNode {
         return Parent;
     }
 
+    public AstNode updatingNodeType(AstNode begin, AstNode node) {
+        if(begin.getToken().getString().equals(node.getToken().getString())) {
+            node.setType(begin.getType());
+        }
+        for (AstNode temp : begin.getChildren() ) {
+                updatingNodeType(temp, node);
+        }
+        return node;
+    }
+
+    public AstNode searchingNodeType(AstNode begin, AstNode node) {
+        if(begin.getToken().getString().equals(node.getToken().getString())) {
+            return begin;
+        }
+        for (AstNode temp : begin.getChildren() ) {
+            updatingNodeType(temp, node);
+        }
+        return null;
+    }
+
     public int lookupChildren(AstNode node) {
         return getChildren().indexOf(node);
+    }
+
+    public AstNode lookupChildrenFromAstNode(AstNode node) {
+        for (int i = 0; i < children.size(); i++) {
+            if(node == children.get(i)) {
+                return children.get(i);
+            }
+        }
+        return null;
+    }
+
+    public AstNode lookupChildrenfromTokenString(String token) {
+        for (int i = 0; i < children.size(); i++) {
+            if(token.equals(children.get(i).getToken().getString())) {
+                return children.get(i);
+            }
+        }
+        return null;
+    }
+
+    public void setType(AstNodeType type) {
+        Type = type;
     }
 
     public AstNode() {

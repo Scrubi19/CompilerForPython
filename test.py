@@ -12,9 +12,15 @@ while a!=0 and b!=0:
 
 # Variable for test SemanticAnalysis
 
+var = "example"
+
+variable = 5
+
+result = "example" + variable
+
 # var1 = 5.5 +"str"
 
-var2 = 5 + 2.3
+# var2 = 5 + 2.3
 
 # var3 = 155.2 + 10
 

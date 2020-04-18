@@ -89,8 +89,9 @@ public class Parser {
                                 currentToken.getTokenType() == numFLOAT || currentToken.getTokenType() == STR
                                     || currentToken.getTokenType() == StrLiteral) {
                             AstNode expression = new AstNode(AstNodeType.ASSIGN, new Token(), CalculateLevel);
-                            expression.addChild(new AstNode(AstNodeType.ID, idToken, CalculateLevel));
-                            parseAssign(expression, CalculateLevel, expression.getToken().getCol());
+                            AstNode child = new AstNode(AstNodeType.ID, idToken, CalculateLevel);
+                            expression.addChild(child);
+                            parseAssign(expression, CalculateLevel, expression.getToken().getCol(), child);
                             root.addChild(expression);
 
                         } else if (currentToken.getTokenType() == lBrace) {
@@ -116,15 +117,20 @@ public class Parser {
          }
         return 0;
     }
-    public static AstNode parseAssign(AstNode expression, int level, int procStr) throws ParserExceptions {
+    public static AstNode parseAssign(AstNode expression, int level, int procStr, AstNode idToken) throws ParserExceptions {
         while(currentToken.getTokenType() != Separator && getIndexCurrToken() != getTokenList().size()
-              || currentToken.getCol() == procStr) {
+                || currentToken.getCol() == procStr) {
             if(currentToken.getTokenType() == ID) {
                 expression.addChild(new AstNode(AstNodeType.ID, currentToken, level));
             } else if(currentToken.getTokenType() == StrLiteral || currentToken.getTokenType() == STR) {
                 expression.addChild(new AstNode(AstNodeType.STRLITERAL, currentToken, level));
+                expression.lookupChildrenFromAstNode(idToken).setType(AstNodeType.STRLITERAL);
+
             } else if(currentToken.getTokenType() == num) {
+                int index = getIndexCurrToken()-3;
                 expression.addChild(new AstNode(AstNodeType.NUMBER, currentToken, level));
+                expression.lookupChildrenfromTokenString(getTokenList().get(index).getString()).setType(AstNodeType.NUMBER);
+
             } else if(currentToken.getTokenType() == numFLOAT) {
                 expression.addChild(new AstNode(AstNodeType.FLOAT, currentToken, level));
             }

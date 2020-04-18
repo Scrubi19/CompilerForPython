@@ -25,6 +25,7 @@ public class Main {
                 Table.tableInitialization(Parser.root);
                 System.out.println("\nIdentifier Table\n"+Table.getIdentifierTable());
                 break;
+
             case (" --dump-asm"):
                 System.out.println("ASM in Developing");
                 break;
