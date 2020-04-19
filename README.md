@@ -1,13 +1,13 @@
 # Compiler for Python on Java
-### Project created on Maven
+## Project created on Maven
 
-## to build a project from the terminal you need use Makefile:
+### to build a project from the terminal you need use Makefile:
 ```
 make
 ```
-## after that
+### after that
 ```
 make startGcd/StartMin/startTest
 ```
-## necessary for installation
+### necessary for installation
 ``` sudo apt instal mvn```
