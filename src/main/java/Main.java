@@ -10,6 +10,15 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws IOException, ParserExceptions, SemanticsExceptions {
+        if(args.length == 0) {
+            System.out.print("Usage:\n" +
+                              "\t [Options] <input_program.py>\n"+
+                              "Options:\n" +
+                              "\t --dump-tokens — вывести результат работы лексического анализатора\n" +
+                              "\t --dump-ast — вывести AST\n" +
+                              "\t --dump-asm — вывести ассемблер\n");
+            return;
+        }
         switch (args[0]){
             case ("--dump-tokens"):
 //                new LexerThread(args[1]).start();

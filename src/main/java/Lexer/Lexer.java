@@ -81,7 +81,7 @@ public class Lexer {
             }
             tokenList.add(new Token(counter+1, 0, EOF,  ""));
 
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | NullPointerException e) {
             System.out.println("File does not exist");
             e.printStackTrace();
         }
