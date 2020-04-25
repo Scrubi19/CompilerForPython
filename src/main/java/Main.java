@@ -41,6 +41,7 @@ public class Main {
                 break;
             default:
                 Lexer.readText(args[0]);
+                Lexer.dumpTokens();
                 Parser.start();
 //                Parser.showTree();
                 Table.tableInitialization(Parser.root);

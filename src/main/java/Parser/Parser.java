@@ -200,6 +200,13 @@ public class Parser {
 
         DefPointer = getIndexCurrToken();
 
+        if(currentToken.getTokenType() == Separator) {
+            lookup();
+            if(currentToken.getTokenType() == RETURN) {
+                decreaseLookup();
+                return node;
+            }
+        }
         // поиск последнего return
         while(getIndexCurrToken() != getTokenList().size()) {
             if(currentToken.getTokenType() == RETURN) {
