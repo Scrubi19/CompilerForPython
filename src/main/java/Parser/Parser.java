@@ -529,8 +529,11 @@ public class Parser {
 
         lookup();
 
-        node.addChild(new AstNode(AstNodeType.ID, currentToken, CalculateLevel));
-        isMatch(ID);
+        Token statement = currentToken;
+
+        node.addChild(new AstNode(AstNodeType.ID, statement, CalculateLevel));
+
+        lookup();
 
         if(currentToken.getTokenType() == lParen) {
             while(currentToken.getTokenType() != rParen) {
