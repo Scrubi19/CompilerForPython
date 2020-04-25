@@ -531,7 +531,18 @@ public class Parser {
 
         Token statement = currentToken;
 
-        node.addChild(new AstNode(AstNodeType.ID, statement, CalculateLevel));
+        if(currentToken.getTokenType() != ID && currentToken.getTokenType() != StrLiteral
+                && currentToken.getTokenType() != STR && currentToken.getTokenType() != num
+                    && currentToken.getTokenType() != numFLOAT && currentToken.getTokenType() != numBinary
+                        && currentToken.getTokenType() != numOctal && currentToken.getTokenType() != numHex) {
+            throw new ParserExceptions("\nexpecting in condition (return) <ID, number or" +
+                    ", String Literal >\nbut found is <"
+                    + currentToken.getTokenType()
+                    + " : " + currentToken.getString()
+                    + "> in (" + currentToken.getCol()+","+currentToken.getRow()+")");
+        }
+
+        node.addChild(new AstNode(AstNodeType.RETURN, statement, CalculateLevel));
 
         lookup();
 

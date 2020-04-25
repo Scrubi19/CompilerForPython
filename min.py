@@ -5,7 +5,7 @@ def min_elt2(arr):
 	for a in arr:
 		if a < mina : 
 			mina=a
-	return mina
+	return mina	
 	
 array = [5, 2, 3]
 
