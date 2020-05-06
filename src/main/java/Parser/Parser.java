@@ -81,7 +81,9 @@ public class Parser {
                         CalculateLevel++;
                     }
                     Token idToken = currentToken;
+                    int currentStr = idToken.getCol();
                     isMatch(ID);
+
                     if(currentToken.getTokenType() == opAssign ) {
                         lookup();
                         if(currentToken.getTokenType() == ID || currentToken.getTokenType() == num ||
@@ -90,7 +92,7 @@ public class Parser {
                             AstNode expression = new AstNode(AstNodeType.ASSIGN, new Token(), CalculateLevel);
                             AstNode child = new AstNode(AstNodeType.ID, idToken, CalculateLevel);
                             expression.addChild(child);
-                            parseAssign(expression, CalculateLevel, expression.getToken().getCol(), child);
+                            parseAssign(expression, CalculateLevel, currentStr, child);
                             root.addChild(expression);
 
                         } else if (currentToken.getTokenType() == lBrace) {
@@ -140,6 +142,11 @@ public class Parser {
                 expression.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, level));
             }
             lookup();
+//            System.out.println("current = "+currentToken.getCol()+" procSTR = "+procStr);
+            if(currentToken.getCol() != procStr) {
+                break;
+            }
+
         }
         return expression;
     }

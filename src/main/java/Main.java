@@ -39,9 +39,9 @@ public class Main {
                 break;
             default:
                 Lexer.readText(args[0]);
-                Lexer.dumpTokens();
+//                Lexer.dumpTokens();
                 Parser.start();
-//                Parser.showTree();
+                Parser.showTree();
                 Table.tableInitialization(Parser.root);
 
                 SemanticAnalysis Semantic = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
