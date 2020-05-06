@@ -35,7 +35,12 @@ public class Main {
                 break;
 
             case (" --dump-asm"):
-                System.out.println("ASM in Developing");
+                Lexer.readText(args[0]);
+                Parser.start();
+                Table.tableInitialization(Parser.root);
+                SemanticAnalysis Sema = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
+                Sema.start();
+
                 break;
             default:
                 Lexer.readText(args[0]);
