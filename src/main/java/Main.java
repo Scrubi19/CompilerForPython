@@ -21,8 +21,6 @@ public class Main {
         }
         switch (args[0]){
             case ("--dump-tokens"):
-//                new LexerThread(args[1]).start();
-//                LexerThread.dumpTokens();
                 Lexer.readText(args[1]);
                 Lexer.dumpTokens();
             break;

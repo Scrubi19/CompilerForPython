@@ -4,7 +4,6 @@ import Lexer.Token.*;
 import Lexer.Token;
 import Parser.AST.AstNode;
 import Parser.AST.AstNode.AstNodeType;
-
 import java.util.Objects;
 import static Lexer.Lexer.*;
 import static Lexer.Token.tokenType.*;
