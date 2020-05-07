@@ -1,3 +1,4 @@
+import CodeGenerator.CodeGenerator;
 import IdentifierTable.Table;
 import Lexer.*;
 import Parser.Parser;
@@ -34,12 +35,16 @@ public class Main {
                 System.out.println("\nIdentifier Table\n"+Table.getIdentifierTable());
                 break;
 
-            case (" --dump-asm"):
-                Lexer.readText(args[0]);
+            case ("--dump-asm"):
+                Lexer.readText(args[1]);
                 Parser.start();
                 Table.tableInitialization(Parser.root);
                 SemanticAnalysis Sema = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
                 Sema.start();
+
+                CodeGenerator codeGen = new CodeGenerator();
+                codeGen.init();
+                codeGen.dumpAsmToFile();
 
                 break;
             default:
