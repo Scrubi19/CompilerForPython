@@ -1,6 +1,6 @@
 #!/usr/bin/python
-a=int(input())
-b=int(input())
+a=10
+b=2
 
 while a!=0 and b!=0:
 	if a>b:

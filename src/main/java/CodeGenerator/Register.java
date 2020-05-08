@@ -21,7 +21,7 @@ public class Register {
         this.name = name;
     }
 
-    public void setEmployment(boolean value) {
+    public void setValue(boolean value) {
         this.value = value;
     }
 }

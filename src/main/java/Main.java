@@ -38,12 +38,15 @@ public class Main {
             case ("--dump-asm"):
                 Lexer.readText(args[1]);
                 Parser.start();
+                Parser.showTree();
+
                 Table.tableInitialization(Parser.root);
                 SemanticAnalysis Sema = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
                 Sema.start();
 
                 CodeGenerator codeGen = new CodeGenerator();
                 codeGen.init();
+                codeGen.analysis(Parser.root);
                 codeGen.dumpAsmToFile();
 
                 break;
