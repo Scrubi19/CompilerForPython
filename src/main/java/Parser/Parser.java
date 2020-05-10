@@ -4,6 +4,7 @@ import Lexer.Token.*;
 import Lexer.Token;
 import Parser.AST.AstNode;
 import Parser.AST.AstNode.AstNodeType;
+
 import java.util.Objects;
 import static Lexer.Lexer.*;
 import static Lexer.Token.tokenType.*;
@@ -108,14 +109,15 @@ public class Parser {
                     break;
                 case PRINT :
                      root.addChild(parsePrint());
-                     break;
+                    break;
                 case RETURN :
                     root.addChild(parseReturn());
                     decreaseLookup();
                     break;
-             }
+            }
             lookup();
-         }
+        }
+        root.addChild(new AstNode(AstNodeType.EOF, currentToken, 1));
         return 0;
     }
     public static AstNode parseAssign(AstNode expression, int level, int procStr, AstNode idToken) throws ParserExceptions {
@@ -453,9 +455,11 @@ public class Parser {
                 lookup();
             } else if (currentToken.getTokenType() == Semi) {
                 lookup();
+            } else if(currentToken.getTokenType() == opAdd) {
+                node.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, CalculateLevel));
+                lookup();
             } else if(currentToken.getTokenType() == lParen) {
                 parseArgumentList(node);
-
             } else if(currentToken.getTokenType() == rParen) {
                 break;
             }

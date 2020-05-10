@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, ParserExceptions, SemanticsExceptions {
+    public static void main(String[] args) throws IOException, ParserExceptions, SemanticsExceptions, InterruptedException {
         if(args.length == 0) {
             System.out.print("Usage:\n" +
                               "\t [Options] <input_program.py>\n"+
@@ -48,6 +48,9 @@ public class Main {
                 codeGen.init();
                 codeGen.analysis(Parser.root);
                 codeGen.dumpAsmToFile();
+                Process proc = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o dumpAsm");
+                proc.waitFor();
+                proc.destroy();
 
                 break;
             default:

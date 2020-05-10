@@ -1,6 +1,6 @@
 #!/usr/bin/python
-a=10
-b=2
+a=22
+b=10
 
 while a!=0 and b!=0:
 	if a>b:
@@ -8,6 +8,4 @@ while a!=0 and b!=0:
 	else:
 		b%=a
 		
-gcd=a+b
-
-print('Func Result =', gcd)
+print('Func Result =', a+b)

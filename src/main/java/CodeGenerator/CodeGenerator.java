@@ -1,22 +1,26 @@
 package CodeGenerator;
 
+import Lexer.Token;
 import Parser.AST.AstNode;
 import Parser.AST.AstNode.AstNodeType;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CodeGenerator {
 
     private final List<Register> Registers = new ArrayList<>();
-    int countIntVar = 0;
-
-    private final List <String> dotData = new ArrayList<>();
     private final List <String> dotText = new ArrayList<>();
 
+    private static HashMap<String, String> varTable = new HashMap<>();// выделенные переменные на стеке
+    private static HashMap<String, String> LC = new HashMap<>();
+
+    int countIntVar = 0;
+    int countLC = 0;
+    int countRbp = 0;
 
     public void init() {
-        dotData.add(".data");
         dotText.add(".text\n"+".globl main\n"+"main:");
 
         Registers.add(new Register("%eax", false));
@@ -29,6 +33,9 @@ public class CodeGenerator {
         Registers.add(new Register("%edi", false));
         Registers.add(new Register("%rbp", false));
         Registers.add(new Register("%rsp", false));
+        Registers.add(new Register("%jne", false));
+        Registers.add(new Register("%while", false));
+        Registers.add(new Register("%LC0", false));
 
     }
 
@@ -41,25 +48,118 @@ public class CodeGenerator {
                     }
                     if(node.getChildren().get(i).getType() == AstNodeType.NUMBER && !getRegisters().get(7).isValue()) {
                         dotText.add("\t\tpushq   %rbp\n\t\tmovq    %rsp, %rbp");
+                        dotText.add("\t\tsubq    $16, %rsp");
+                        countLC++;
+                        countLC++;
                         getRegisters().get(7).setValue(true);
-                        if(countIntVar > 2 && !getRegisters().get(8).isValue()) {
-                            dotText.add("\t\tsubq    $16, %rsp");
-                            getRegisters().get(8).setValue(true);
-                        }
                     }
-                    //выделение памяти на стеке для локальных переменных
                     if( i < node.getChildren().size()-1) {
                         if (node.getChildren().get(i).getType() == AstNodeType.NUMBER &&
                                 node.getChildren().get(i+1).getType() == AstNodeType.NUMBER) {
-                            dotText.add("\t\tmovl    $"+node.getChildren().get(i+1).getToken().getString()+", %rsp");
+                            countRbp = countRbp + 4;
+                            dotText.add("\t\tmovl    $"+node.getChildren().get(i+1).getToken().getString()+", -"+countRbp +"(%rbp)");
+                            varTable.put(node.getChildren().get(i).getToken().getString(),"-"+countRbp +"(%rbp)");
                         }
-
                     }
                 }
-//                if(node.) {
-//
-//                }
-            break;
+                break;
+            case WHILE:
+                dotText.add("\t\tjmp    .L"+countLC);
+                dotText.add(".L"+countLC+":");
+                LC.put( "while_begin", ".L"+countLC);
+                for (int i = 0; i < node.getChildren().size(); i++) {
+                    if(node.getChildren().get(i).getToken().getString().equals("!=")) {
+                        dotText.add("\t\tcmpl   $"+node.getChildren().get(i+1).getToken().getString()+
+                                ", "+ varTable.get(node.getChildren().get(i-1).getToken().getString()));
+                        if(getRegisters().get(10).isValue()) {
+                            countLC++;
+                            dotText.add("\t\tjne   .L"+countLC);
+                            LC.put("while_in", ".L"+countLC);
+                        } else {
+                            countLC++;
+                            dotText.add("\t\tje    .L"+countLC);
+                            LC.put("while_out", ".L"+countLC);
+                            getRegisters().get(11).setValue(true);
+
+                        }
+                    }
+                    if (node.getChildren().get(i).getToken().getString().equals("and")) {
+                        getRegisters().get(10).setValue(true);
+                    }
+                }
+                break;
+            case IF:
+                dotText.add(".L"+countLC+":");
+                AstNode temp;
+                for (int i = 0; i < node.getChildren().size(); i++) {
+                    if(node.getChildren().get(i).getType() == AstNodeType.EXPRESSION) {
+                        temp = node.getChildren().get(i);
+                        for (int j = 0; j < temp.getChildren().size(); j++) {
+                            if(temp.getChildren().get(j).getToken().getString().equals(">")) {
+                                dotText.add("\t\tmovl  "+varTable.get(temp.getChildren().get(j-1).getToken().getString())+", %eax");
+                                getRegisters().get(0).setValue(true);
+                                dotText.add("\t\tcmpl  "+varTable.get(temp.getChildren().get(j+1).getToken().getString())+", %eax");
+                                countLC++;
+                                dotText.add("\t\tjle    .L"+countLC);
+                                LC.put("if_out", ".L"+countLC);
+                            }
+                        }
+                    }
+                    if(node.getChildren().get(i).getType() == AstNodeType.STATEMENT) {
+                        temp = node.getChildren().get(i);
+                        for (int j = 0; j < temp.getChildren().size(); j++) {
+                            if(temp.getChildren().get(j).getToken().getString().equals("%=")) {
+                                dotText.add("\t\tmovl  "+varTable.get(temp.getChildren().get(j-1).getToken().getString())+", %eax");
+                                dotText.add("\t\tcltd");
+                                dotText.add("\t\tidivl  "+varTable.get(temp.getChildren().get(j+1).getToken().getString()));
+                                dotText.add("\t\tmovl   %edx, "+varTable.get(temp.getChildren().get(j-1).getToken().getString()));
+                                dotText.add("\t\tjmp    "+LC.get("while_begin"));
+                            }
+                        }
+                    }
+                }
+                break;
+            case ELSE:
+                dotText.add(".L"+countLC+":");
+                for (int i = 0; i < node.getChildren().size(); i++) {
+                    if(node.getChildren().get(i).getType() == AstNodeType.STATEMENT) {
+                        temp = node.getChildren().get(i);
+                        for (int j = 0; j < temp.getChildren().size(); j++) {
+                            if (temp.getChildren().get(j).getToken().getString().equals("%=")) {
+                                dotText.add("\t\tmovl  " + varTable.get(temp.getChildren().get(j - 1).getToken().getString()) + ", %eax");
+                                dotText.add("\t\tcltd");
+                                dotText.add("\t\tidivl  " + varTable.get(temp.getChildren().get(j + 1).getToken().getString()));
+                                dotText.add("\t\tmovl   %edx, " + varTable.get(temp.getChildren().get(j - 1).getToken().getString()));
+                            }
+                        }
+                    }
+                }
+                break;
+            case PRINT:
+                if(getRegisters().get(11).isValue()) {
+                    dotText.add(LC.get("while_out")+":");
+                } else {
+                    dotText.add(".L"+countLC+":");
+                }
+                for (int i = 0; i < node.getChildren().size(); i++) {
+                    if(node.getChildren().get(i).getToken().getString().equals("+")) {
+                        dotText.add("\t\tmovl  " + varTable.get(node.getChildren().get(i-1).getToken().getString()) + ", %edx");
+                        dotText.add("\t\tmovl  " + varTable.get(node.getChildren().get(i+1).getToken().getString()) + ", %eax");
+                        dotText.add("\t\taddl  %edx, %eax");
+                        dotText.add("\t\tmovl  %edx, %esi");
+                    }
+                }
+                dotText.add("\t\tmovl    $.LC0, %edi");
+                getRegisters().get(12).setValue(true);
+                dotText.add("\t\tmovl    $0, %eax");
+                dotText.add("\t\tcall    printf");
+                break;
+            case EOF:
+                dotText.add("\t\tnop\n\t\tleave\n\t\tret");
+                if(getRegisters().get(12).isValue()) {
+                    dotText.add(".LC0:\n\t\t.string \"%d\"");
+                }
+                break;
         }
         for (AstNode temp : node.getChildren() ) {
             analysis(temp);
@@ -74,11 +174,6 @@ public class CodeGenerator {
         Writer writer = null;
         try {
             writer = new FileWriter("dumpAsm.s");
-            for (String line : dotData) {
-                writer.write(line);
-                writer.write(System.getProperty("line.separator"));
-            }
-            writer.flush();
             for (String line : dotText) {
                 writer.write(line);
                 writer.write(System.getProperty("line.separator"));

@@ -134,6 +134,6 @@ public class AstNode {
         ELIF, FOR, WHILE, INPUT, DEF, STRLITERAL,
         UNKNOWN, EXPRESSION, OPERATOR, STATEMENT,
         PRINT, ARG, IN, TYPE, RETURN, NULL, LOGIC,
-        ARRAY, INTtoFLOAT
+        ARRAY, INTtoFLOAT, EOF;
     }
 }
