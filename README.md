@@ -7,7 +7,7 @@
 ```
 ### Usage
 ```
-"Usage
+Usage
   [Options] <input_program.py>
   Options:
   --dump-tokens — вывести результат работы лексического анализатора
