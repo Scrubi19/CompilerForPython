@@ -38,7 +38,7 @@ public class Main {
             case ("--dump-asm"):
                 Lexer.readText(args[1]);
                 Parser.start();
-                Parser.showTree();
+//                Parser.showTree();
 
                 Table.tableInitialization(Parser.root);
                 SemanticAnalysis Sema = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
@@ -48,9 +48,13 @@ public class Main {
                 codeGen.init();
                 codeGen.analysis(Parser.root);
                 codeGen.dumpAsmToFile();
-                Process proc = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o dumpAsm");
+                codeGen.dumpAsmFromFile();
+                Process proc = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[1].replace (".py", ""));
+                Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
                 proc.waitFor();
+                proc2.waitFor();
                 proc.destroy();
+                proc2.destroy();
 
                 break;
             default:
