@@ -165,7 +165,7 @@ public class CodeGenerator {
                 }
                 dotText.add("\t\tnop\n\t\tleave\n\t\tret");
                 if(getRegisters().get(14).isValue()) {
-                    dotText.add(".LC0:\n\t\t.string \"%d\n\"");
+                    dotText.add(".LC0:\n\t\t.string \"%d\\n\"");
                 }
                 break;
         }

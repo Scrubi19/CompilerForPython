@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-array = [5, 2, 3]
+int array = [5, 2, 3]
 
 def min_elt2(arr):
-	mina=arr[0]
+	int mina=arr[0]
 	for a in arr:
 		if a < mina : 
 			mina=a
