@@ -36,6 +36,8 @@ public class CodeGenerator {
         Registers.add(new Register("%jne", false));
         Registers.add(new Register("%while", false));
         Registers.add(new Register("%LC0", false));
+        Registers.add(new Register("exit", false));
+
 
     }
 
@@ -89,6 +91,7 @@ public class CodeGenerator {
                 }
                 break;
             case IF:
+                getRegisters().get(12).setValue(true);
                 dotText.add(".L"+countLC+":");
                 AstNode temp;
                 for (int i = 0; i < node.getChildren().size(); i++) {
@@ -155,6 +158,9 @@ public class CodeGenerator {
                 dotText.add("\t\tcall    printf");
                 break;
             case EOF:
+                if(getRegisters().get(12).isValue()) {
+                    dotText.add(LC.get("while_out")+":");
+                }
                 dotText.add("\t\tnop\n\t\tleave\n\t\tret");
                 if(getRegisters().get(12).isValue()) {
                     dotText.add(".LC0:\n\t\t.string \"%d\"");

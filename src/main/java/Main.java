@@ -49,11 +49,11 @@ public class Main {
                 codeGen.dumpAsmToFile();
                 codeGen.dumpAsmFromFile();
                 Process proc = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[1].replace (".py", ""));
-                Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
+//                Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
                 proc.waitFor();
-                proc2.waitFor();
+//                proc2.waitFor();
                 proc.destroy();
-                proc2.destroy();
+//                proc2.destroy();
 
                 break;
             default:
