@@ -60,7 +60,7 @@ public class Main {
             default:
                 Lexer.readText(args[0]);
                 Parser.start();
-
+                Parser.showTree();
                 Table.tableInitialization(Parser.root);
                 SemanticAnalysis Semantic = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
                 Semantic.start();
