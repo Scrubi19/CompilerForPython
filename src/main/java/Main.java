@@ -59,13 +59,22 @@ public class Main {
             default:
                 Lexer.readText(args[0]);
                 Parser.start();
-                Parser.showTree();
-                Table.tableInitialization(Parser.root);
 
+                Table.tableInitialization(Parser.root);
                 SemanticAnalysis Semantic = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
                 Semantic.start();
-                System.out.println("ASTtree after SemanticAnalysis ");
-                Parser.showTree();
+
+                CodeGenerator codeGene = new CodeGenerator();
+                codeGene.init();
+                codeGene.analysis(Parser.root);
+                codeGene.dumpAsmToFile();
+
+                Process proce = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[0].replace (".py", ""));
+                Process proce2 = Runtime.getRuntime().exec("rm dumpAsm.s");
+                proce.waitFor();
+                proce2.waitFor();
+                proce.destroy();
+                proce2.destroy();
                 break;
         }
     }

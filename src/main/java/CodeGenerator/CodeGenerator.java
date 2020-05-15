@@ -37,7 +37,7 @@ public class CodeGenerator {
         Registers.add(new Register("%while", false));
         Registers.add(new Register("%LC0", false));
         Registers.add(new Register("exit", false));
-
+        Registers.add(new Register("print", false));
 
     }
 
@@ -157,14 +157,15 @@ public class CodeGenerator {
                 dotText.add("\t\tcall    printf");
                 getRegisters().get(12).setValue(true);
                 getRegisters().get(13).setValue(true);
+                getRegisters().get(14).setValue(true);
                 break;
             case EOF:
                 if(!getRegisters().get(13).isValue()) {
                     dotText.add(LC.get("while_out")+":");
                 }
                 dotText.add("\t\tnop\n\t\tleave\n\t\tret");
-                if(getRegisters().get(12).isValue()) {
-                    dotText.add(".LC0:\n\t\t.string \"%d\"");
+                if(getRegisters().get(14).isValue()) {
+                    dotText.add(".LC0:\n\t\t.string \"%d\\n\"");
                 }
                 break;
         }
