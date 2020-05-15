@@ -8,11 +8,11 @@
 ### Usage
 ```
 Usage
-  [Options] <input_program.py>
-  Options:
-  --dump-tokens — вывести результат работы лексического анализатора
-  --dump-ast — вывести AST
-  --dump-asm — вывести ассемблер
+  ./build.sh [Options] <input_program.py>
+              Options:
+              --dump-tokens — вывести результат работы лексического анализатора
+              --dump-ast — вывести AST
+              --dump-asm — вывести ассемблер
 ```
 ### necessary for installation
 ``` sudo apt instal mvn```
