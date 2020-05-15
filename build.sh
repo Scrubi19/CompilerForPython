@@ -26,5 +26,11 @@ if [[ -n "$1" ]]
 			java -classpath ./target/classes Main $1
 		fi
 	else 
-		echo "No parameters found. "
-fi
+		echo "Usage:"
+        echo "[Options] <input_program.py>"
+        echo "Options:"
+        echo "--dump-tokens — вывести результат работы лексического анализатора"
+        echo "--dump-ast — вывести AST"
+        echo "--dump-asm — вывести ассемблер"
+
+fi	  
