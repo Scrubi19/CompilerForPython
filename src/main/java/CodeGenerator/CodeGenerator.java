@@ -153,12 +153,13 @@ public class CodeGenerator {
                     }
                 }
                 dotText.add("\t\tmovl    $.LC0, %edi");
-                getRegisters().get(12).setValue(true);
                 dotText.add("\t\tmovl    $0, %eax");
                 dotText.add("\t\tcall    printf");
+                getRegisters().get(12).setValue(true);
+                getRegisters().get(13).setValue(true);
                 break;
             case EOF:
-                if(getRegisters().get(12).isValue()) {
+                if(!getRegisters().get(13).isValue()) {
                     dotText.add(LC.get("while_out")+":");
                 }
                 dotText.add("\t\tnop\n\t\tleave\n\t\tret");
