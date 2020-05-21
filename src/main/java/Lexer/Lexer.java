@@ -58,7 +58,6 @@ public class Lexer {
         }
     }
 
-
     public static void readText(String path) throws IOException {
         try {
             int counter =  0;
@@ -86,7 +85,6 @@ public class Lexer {
             e.printStackTrace();
         }
     }
-
 
     public static boolean getTokenFromString(String string, int counter) {
         String buf = new String("");

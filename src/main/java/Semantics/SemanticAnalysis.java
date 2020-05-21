@@ -1,9 +1,6 @@
 package Semantics;
 
-import Lexer.Token;
 import Parser.AST.AstNode;
-import Parser.ParserExceptions;
-
 import java.util.HashMap;
 
 import static Lexer.Token.tokenType.*;
@@ -14,13 +11,13 @@ import static Parser.AST.AstNode.AstNodeType.ID;
 public class SemanticAnalysis {
 
     public AstNode root;
-
     public HashMap<String, Integer> identifierTable = new HashMap<>();
 
     public SemanticAnalysis(AstNode node, HashMap<String, Integer> Table) {
         root = node;
         identifierTable = Table;
     }
+
     public void start() throws SemanticsExceptions {
         for(int i = 0; i < root.getChildren().size(); i++) {
             analysis(root.getChildren().get(i));
@@ -58,7 +55,6 @@ public class SemanticAnalysis {
                                 + " in line " + node.getToken().getCol());
                     }
                 }
-
                 // 'int' and 'str' strLiteral + id
                 if(parent.getChildren().get(firstArg).getType() == STRLITERAL &&
                         parent.getChildren().get(secondArg).getType() == ID) {
@@ -77,11 +73,9 @@ public class SemanticAnalysis {
                                 + " in line " + node.getToken().getCol());
                     }
                 }
-
                 // id + id
                 if(parent.getChildren().get(firstArg).getType() == ID &&
                         parent.getChildren().get(secondArg).getType() == ID) {
-
                     //'int' and str
                     if(node.updatingNodeType(root, parent.getChildren().get(firstArg)).getType() == STRLITERAL &&
                         node.updatingNodeType(root, parent.getChildren().get(secondArg)).getType() == NUMBER ||
@@ -98,7 +92,6 @@ public class SemanticAnalysis {
                                 + " in line " + node.getToken().getCol());
                     }
                 }
-
                 //  'int' and 'str'
                 if(parent.getChildren().get(firstArg).getType() == AstNode.AstNodeType.NUMBER &&
                     parent.getChildren().get(secondArg).getType() == AstNode.AstNodeType.STRLITERAL ||
@@ -125,7 +118,7 @@ public class SemanticAnalysis {
                 }
             }
         }
-        for(AstNode temp : node.getChildren()) {
+        for(AstNode temp :  node.getChildren()) {
             analysis(temp);
         }
     }

@@ -178,7 +178,6 @@ public class Parser {
             }
             lookup();
         }
-
         return node;
     }
     /**
@@ -405,6 +404,7 @@ public class Parser {
         }
         return node;
     }
+
     public static AstNode parseStatement(final int level) throws ParserExceptions {
         int calc = level;
         AstNode node = new AstNode(AstNode.AstNodeType.STATEMENT, new Token(), level);
@@ -579,6 +579,7 @@ public class Parser {
             showTreeNode(root.getChildren().get(i));
         }
     }
+
     public static void showTreeNode(AstNode node) {
         for(int i = 0; i < node.getLevel(); i++) {
             if(i == 0) {
@@ -599,6 +600,7 @@ public class Parser {
             }
         }
     }
+
     public static int nestingLevelCalculation() {
         int CalculateLevel = 0;
         int startPosition = getIndexCurrToken();
