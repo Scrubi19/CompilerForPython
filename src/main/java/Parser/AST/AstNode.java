@@ -36,7 +36,7 @@ public class AstNode {
             return begin;
         }
         for (AstNode temp : begin.getChildren() ) {
-            updatingNodeType(temp, node);
+            searchingNodeType(temp, node);
         }
         return null;
     }

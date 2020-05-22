@@ -65,16 +65,40 @@ public class Parser {
                      decreaseCurrToken();
                      break;
                  case KeywordWhile :
-                     root.addChild(parseWhile());
+                     AstNode temp = parseWhile();
+                     while(currentToken.getTokenType() == Separator) {
+                         lookup();
+                         if (currentToken.getTokenType() == ID) {
+                             temp.addChild(parseStatement(temp.getLevel()));
+                         }
+                     }
+                     root.addChild(temp);
+                     decreaseLookup();
                      break;
                  case KeywordIf :
-                     root.addChild(parseIf());
+                     AstNode ifNode = parseIf();
+                     while(currentToken.getTokenType() == Separator) {
+                         lookup();
+                         if (currentToken.getTokenType() == ID) {
+                             ifNode.addChild(parseStatement(ifNode.getLevel()));
+                         }
+                     }
+                     root.addChild(ifNode);
+                     decreaseLookup();
                      break;
                 case KeywordElif :
                     root.addChild(parseElif());
                     break;
                 case KeywordElse :
-                    root.addChild(parseElse());
+                    AstNode elseNode = parseElse();
+                    while(currentToken.getTokenType() == Separator) {
+                        lookup();
+                        if (currentToken.getTokenType() == ID) {
+                            elseNode.addChild(parseStatement(elseNode.getLevel()));
+                        }
+                    }
+                    root.addChild(elseNode);
+                    decreaseLookup();
                     break;
                 case ID :
                     int CalculateLevel = nestingLevelCalculation();
@@ -389,11 +413,20 @@ public class Parser {
                         currentToken.getTokenType().equals(opLess) ||
                         currentToken.getTokenType().equals(opMoreEq) ||
                         currentToken.getTokenType().equals(opLessEq) ||
-                        currentToken.getTokenType().equals(opInEqual)) {
+                        currentToken.getTokenType().equals(opInEqual) ||
+                        currentToken.getTokenType().equals(opEqual)) {
                 node.addChild(new AstNode(AstNode.AstNodeType.OPERATOR, currentToken, level));
                 lookup();
-            } else if (currentToken.getTokenType().equals(Separator)) {
+            } else if (currentToken.getTokenType().equals(Separator) ) {
                 lookup();
+            } else if (currentToken.getTokenType().equals(lBrace)) {
+                decreaseLookup();
+                node.addChild(new AstNode(AstNode.AstNodeType.ARRAY, currentToken, level));
+                lookup();
+                lookup();
+                lookup();
+                lookup();
+
             } else {
                 throw new ParserExceptions("expecting <ID, Number" +
                         ", operator or ExpSemi (:) >, but found is <"
@@ -427,12 +460,28 @@ public class Parser {
                     currentToken.getTokenType() == opIntegerDiv) {
                 node.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, level));
                 lookup();
-                if(currentToken.getTokenType() == ID
-                    || currentToken.getTokenType() == num) {
+                if(currentToken.getTokenType() == ID || currentToken.getTokenType() == num) {
                     node.addChild(new AstNode(AstNodeType.ID, currentToken, level));
                 }
                 lookup();
-            } else {
+            } else if (currentToken.getTokenType() == PRINT) {
+                node.addChild(new AstNode(AstNodeType.PRINT, currentToken, level));
+                lookup();
+                if (currentToken.getTokenType() == lParen) {
+                    lookup();
+                    if (currentToken.getTokenType() == StrLiteral) {
+                        node.addChild(new AstNode(AstNodeType.STRLITERAL, currentToken, level));
+                    } else {
+                        node.addChild(new AstNode(AstNodeType.ARG, currentToken, level));
+                    }
+                    lookup();
+                    lookup();
+
+                }
+            } else if (currentToken.getTokenType() == Separator) {
+                break;
+            }
+            else {
                 throw new ParserExceptions("\nexpecting <ID, Number" +
                         ", operator or ExpSemi (:) >\nbut found is <"
                         + currentToken.getTokenType()
@@ -450,12 +499,16 @@ public class Parser {
         isMatch(PRINT);
         isMatch(lParen);
         while (currentToken.getTokenType() != rParen || currentToken.getTokenType() != Separator) {
-            if(currentToken.getTokenType() == ID || currentToken.getTokenType() == StrLiteral) {
+            if(currentToken.getTokenType() == ID || currentToken.getTokenType() == num) {
                 node.addChild(new AstNode(AstNodeType.ARG, currentToken, CalculateLevel));
+                lookup();
+            }  else if (currentToken.getTokenType() == StrLiteral) {
+                node.addChild(new AstNode(AstNodeType.STRLITERAL, currentToken, CalculateLevel));
                 lookup();
             } else if (currentToken.getTokenType() == Semi) {
                 lookup();
-            } else if(currentToken.getTokenType() == opAdd) {
+            } else if(currentToken.getTokenType() == opAdd ||
+                    currentToken.getTokenType() == opSub) {
                 node.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, CalculateLevel));
                 lookup();
             } else if(currentToken.getTokenType() == lParen) {
@@ -515,11 +568,22 @@ public class Parser {
                     currentToken.getTokenType().equals(opLess) ||
                     currentToken.getTokenType().equals(opMoreEq) ||
                     currentToken.getTokenType().equals(opLessEq) ||
+                    currentToken.getTokenType().equals(opInEqual)||
+                    currentToken.getTokenType().equals(opSub) ||
+                    currentToken.getTokenType().equals(opAdd) ||
+                    currentToken.getTokenType().equals(opEqual)) {
 
-                    currentToken.getTokenType().equals(opInEqual)) {
                 node.addChild(new AstNode(AstNodeType.OPERATOR, currentToken, node.getLevel()));
                 lookup();
-            }  else if(currentToken.getTokenType().equals(opAND) || // operator
+            } else if (currentToken.getTokenType().equals(lBrace)) {
+                decreaseLookup();
+                node.addChild(new AstNode(AstNodeType.ARRAY, currentToken, node.getLevel()));
+                lookup();
+                lookup();
+                lookup();
+                lookup();
+
+            } else if(currentToken.getTokenType().equals(opAND) || // operator
                     currentToken.getTokenType().equals(opOR) ||
                     currentToken.getTokenType().equals(opNOT)) {
                 node.addChild(new AstNode(AstNodeType.LOGIC, currentToken, node.getLevel()));

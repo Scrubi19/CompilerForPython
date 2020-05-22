@@ -1,26 +1,23 @@
 #!/usr/bin/python
 
-str1 = "searching string index"
-str2 = "string"
+stack = "searching string index"
+search = "ing"
 
-	i = 0
-	j = 0
-	m = len(str1)
-	n = len(haystack)
-	if m ==0:
-		return 0
-	while i<n and n-i+1>=m:
-    	if haystack[i] == str1[j]:
-        	temp = i
-		while j<m and i<n and str1[j]==haystack[i]:
-        	i+=1
-        	j+=1
-		if j == m:
-        	return temp
-		i= temp+1
-		j = 0
+i = 0
+j = 0
+count = 0
+
+n = len(stack)
+m = len(search)
+
+while i < n:
+	if stack[i] == search[j]:
+		j+=1
+		count+=1
 	else:
-		i+=1
-	return -1
-
-print(strStr(haystack, str1))
+		j = 0
+		count = 0
+	if m == count:
+		print("is substring")
+		i = n
+	i+=1

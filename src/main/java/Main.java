@@ -25,23 +25,30 @@ public class Main {
                 if(args.length > 1) {
                     Lexer.readText(args[1]);
                     Lexer.dumpTokens();
+                    Parser.start();
+                    Table.tableInitialization(Parser.root);
+                    SemanticAnalysis Sema = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
+                    Sema.start();
+
+                    CodeGenerator codeGen = new CodeGenerator();
+                    codeGen.init(Table.getIdentifierTable(), Parser.root);
+                    codeGen.analysis(Parser.root);
+                    codeGen.dumpAsmToFile();
+
+                    Process proc1 = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[1].replace (".py", ""));
+                    Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
+                    proc1.waitFor();
+                    proc2.waitFor();
+                    proc1.destroy();
+                    proc2.destroy();
+
                 }
             break;
 
             case ("--dump-ast"):
                 if(args.length > 1) {
                     Lexer.readText(args[1]);
-                    Parser.start();
-                    Parser.showTree();
 
-                    Table.tableInitialization(Parser.root);
-                    System.out.println("\nIdentifier Table\n" + Table.getIdentifierTable());
-                }
-                break;
-
-            case ("--dump-asm"):
-                if(args.length > 1) {
-                    Lexer.readText(args[1]);
                     Parser.start();
                     Parser.showTree();
 
@@ -50,43 +57,66 @@ public class Main {
                     SemanticAnalysis Sema = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
                     Sema.start();
 
-                    System.out.println("\nIdentifier Table\n"+Table.getIdentifierTable());
+                    CodeGenerator codeGen = new CodeGenerator();
+                    codeGen.init(Table.getIdentifierTable(), Parser.root);
+                    codeGen.analysis(Parser.root);
+                    codeGen.dumpAsmToFile();
+
+                    Process proc1 = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[1].replace (".py", ""));
+                    Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
+                    proc1.waitFor();
+                    proc2.waitFor();
+                    proc1.destroy();
+                    proc2.destroy();
+
+                }
+                break;
+
+            case ("--dump-asm"):
+                if(args.length > 1) {
+                    Lexer.readText(args[1]);
+                    Parser.start();
+
+                    Table.tableInitialization(Parser.root);
+
+                    SemanticAnalysis Sema = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
+                    Sema.start();
 
                     CodeGenerator codeGen = new CodeGenerator();
-                    codeGen.init(Table.getIdentifierTable());
+                    codeGen.init(Table.getIdentifierTable(), Parser.root);
                     codeGen.analysis(Parser.root);
                     codeGen.dumpAsmToFile();
                     codeGen.dumpAsmFromFile();
 
-                    Process proc = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[1].replace (".py", ""));
+                    Process proc1 = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[1].replace (".py", ""));
                     Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
-                    proc.waitFor();
+                    proc1.waitFor();
                     proc2.waitFor();
-                    proc.destroy();
+                    proc1.destroy();
                     proc2.destroy();
                 }
                 break;
             default:
-                if(args.length > 1) {
-                    Lexer.readText(args[0]);
-                    Parser.start();
+                Lexer.readText(args[0]);
+                Parser.start();
 
-                    Table.tableInitialization(Parser.root);
-                    SemanticAnalysis Semantic = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
-                    Semantic.start();
+                Table.tableInitialization(Parser.root);
 
-                    CodeGenerator codeGene = new CodeGenerator();
-                    codeGene.init(Table.getIdentifierTable());
-                    codeGene.analysis(Parser.root);
-                    codeGene.dumpAsmToFile();
+                SemanticAnalysis Sema = new SemanticAnalysis(Parser.root, Table.getIdentifierTable());
+                Sema.start();
 
-                    Process proce = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o " + args[0].replace(".py", ""));
-                    Process proce2 = Runtime.getRuntime().exec("rm dumpAsm.s");
-                    proce.waitFor();
-                    proce2.waitFor();
-                    proce.destroy();
-                    proce2.destroy();
-                }
+                CodeGenerator codeGen = new CodeGenerator();
+                codeGen.init(Table.getIdentifierTable(), Parser.root);
+                codeGen.analysis(Parser.root);
+                codeGen.dumpAsmToFile();
+
+                Process proc1 = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[0].replace (".py", ""));
+                Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
+                proc1.waitFor();
+                proc2.waitFor();
+                proc1.destroy();
+                proc2.destroy();
+
                 break;
         }
     }
