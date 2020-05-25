@@ -38,6 +38,9 @@ public class Token {
         token = newToken;
         string = lexeme;
     }
+    public Token(String lexeme) {
+        string = lexeme;
+    }
 
     public int getCol() {
         return col;

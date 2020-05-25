@@ -31,7 +31,7 @@ public class Main {
                     Sema.start();
 
                     CodeGenerator codeGen = new CodeGenerator();
-                    codeGen.init(Table.getIdentifierTable(), Parser.root);
+                    codeGen.init(Table.getIdentifierTable().size(), Parser.root);
                     codeGen.analysis(Parser.root);
                     codeGen.dumpAsmToFile();
 
@@ -58,7 +58,7 @@ public class Main {
                     Sema.start();
 
                     CodeGenerator codeGen = new CodeGenerator();
-                    codeGen.init(Table.getIdentifierTable(), Parser.root);
+                    codeGen.init(Table.getIdentifierTable().size(), Parser.root);
                     codeGen.analysis(Parser.root);
                     codeGen.dumpAsmToFile();
 
@@ -83,7 +83,7 @@ public class Main {
                     Sema.start();
 
                     CodeGenerator codeGen = new CodeGenerator();
-                    codeGen.init(Table.getIdentifierTable(), Parser.root);
+                    codeGen.init(Table.getIdentifierTable().size(), Parser.root);
                     codeGen.analysis(Parser.root);
                     codeGen.dumpAsmToFile();
                     codeGen.dumpAsmFromFile();
@@ -106,7 +106,7 @@ public class Main {
                 Sema.start();
 
                 CodeGenerator codeGen = new CodeGenerator();
-                codeGen.init(Table.getIdentifierTable(), Parser.root);
+                codeGen.init(Table.getIdentifierTable().size(), Parser.root);
                 codeGen.analysis(Parser.root);
                 codeGen.dumpAsmToFile();
 

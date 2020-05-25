@@ -18,21 +18,30 @@ public class CodeGenerator {
     private static HashMap<String, String> LC = new HashMap<>();
 
     int varsInStack = 0;
+
+    public List<String> getDotText() {
+        return dotText;
+    }
+
+    public List<String> getDotData() {
+        return dotData;
+    }
+
     int countLC = 0;
     int countRBP = 0;
 
-    public void init(HashMap<String, Integer> idTable, AstNode root) {
+    public void init(int idTableSize, AstNode root) {
         AstRoot = root;
         dotData.add(".data");
         dotText.add(".text\n"+".globl main\n"+"main:");
         dotText.add("\t\tpushq   %rbp\n\t\tmovq    %rsp, %rbp");
-        if (idTable.size() <= 4) {
+        if (idTableSize <= 4) {
             varsInStack = 16;
         }
-        if(idTable.size() >= 4) {
+        if(idTableSize >= 4) {
             varsInStack = 48;
         }
-        if(idTable.size() >= 8) {
+        if(idTableSize >= 8) {
             varsInStack = 64;
         }
         dotText.add("\t\tsubq    $"+varsInStack+", %rsp");
@@ -53,7 +62,6 @@ public class CodeGenerator {
         Registers.add(new Register("exit", false));
         Registers.add(new Register("print", false));
         Registers.add(new Register("%for", false));
-
 
     }
 
