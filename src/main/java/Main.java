@@ -36,8 +36,8 @@ public class Main {
                     codeGen.dumpAsmToFile();
 
                     Process proc1 = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[1].replace (".py", ""));
-                    Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
                     proc1.waitFor();
+                    Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
                     proc2.waitFor();
                     proc1.destroy();
                     proc2.destroy();
@@ -63,8 +63,8 @@ public class Main {
                     codeGen.dumpAsmToFile();
 
                     Process proc1 = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[1].replace (".py", ""));
-                    Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
                     proc1.waitFor();
+                    Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
                     proc2.waitFor();
                     proc1.destroy();
                     proc2.destroy();
@@ -89,8 +89,9 @@ public class Main {
                     codeGen.dumpAsmFromFile();
 
                     Process proc1 = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[1].replace (".py", ""));
-                    Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
                     proc1.waitFor();
+                    Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
+
                     proc2.waitFor();
                     proc1.destroy();
                     proc2.destroy();
@@ -111,8 +112,8 @@ public class Main {
                 codeGen.dumpAsmToFile();
 
                 Process proc1 = Runtime.getRuntime().exec("gcc -no-pie dumpAsm.s -o "+args[0].replace (".py", ""));
-                Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
                 proc1.waitFor();
+                Process proc2 = Runtime.getRuntime().exec("rm dumpAsm.s");
                 proc2.waitFor();
                 proc1.destroy();
                 proc2.destroy();
